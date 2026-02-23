@@ -1,18 +1,23 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-primary: #1775d3;
+  --color-primary-dark: #125ea8;
+  --color-background-light: #FAFAFA;
+  --color-background-dark: #111921;
+  --color-text-main: #0e141b;
+  --color-text-sub: #4e7397;
+  --color-danger: #F44336;
+  
+  --font-display: "Lexend", sans-serif;
+}
 
 @layer utilities {
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .pb-safe {
-    padding-bottom: env(safe-area-inset-bottom, 20px);
-  }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
 }
 
 .material-symbols-outlined {
