@@ -49,7 +49,13 @@ def request_cima(codigo_nacional):
         return None
 
     datos = respuesta.json()
-    nombre = datos.get('nombre', 'Medicamento').split()[0]
+    
+    # 1. Obtener el nombre bruto (primera palabra)
+    nombre_raw = datos.get('nombre', 'Medicamento').split()[0]
+    
+    # 2. LIMPIEZA: Reemplazar caracteres no válidos para nombres de archivo por "_"
+    # Esto evita el FileNotFoundError cuando el medicamento tiene una "/" en el nombre
+    nombre = re.sub(r'[\\/*?:"<>|]', "_", nombre_raw)
 
     ficha_url = None
     prospecto_url = None
