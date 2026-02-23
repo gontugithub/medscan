@@ -3,6 +3,11 @@ from pypdf import PdfWriter
 import os
 import requests
 from dotenv import load_dotenv
+import cv2
+import numpy as np
+import tempfile
+
+
 
 load_dotenv()
 
@@ -12,6 +17,72 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 OCR_API_KEY = os.getenv('OCR_API_KEY')
 CHATPDF_API_KEY = os.getenv('CHATPDF_API_KEY')
+
+
+def aplicar_perspectiva(imagen, pts):
+    """Corrige la perspectiva del documento para encuadrarlo"""
+    suma = pts.sum(axis=1)
+    diff = np.diff(pts, axis=1)
+    
+    ordenados = np.array([
+        pts[np.argmin(suma)],
+        pts[np.argmin(diff)],
+        pts[np.argmax(suma)],
+        pts[np.argmax(diff)],
+    ], dtype="float32")
+    
+    ancho = max(
+        np.linalg.norm(ordenados[1] - ordenados[0]),
+        np.linalg.norm(ordenados[2] - ordenados[3])
+    )
+    alto = max(
+        np.linalg.norm(ordenados[3] - ordenados[0]),
+        np.linalg.norm(ordenados[2] - ordenados[1])
+    )
+    
+    destino = np.array([
+        [0, 0], [ancho - 1, 0],
+        [ancho - 1, alto - 1], [0, alto - 1]
+    ], dtype="float32")
+    
+    M = cv2.getPerspectiveTransform(ordenados, destino)
+    return cv2.warpPerspective(imagen, M, (int(ancho), int(alto)))
+
+
+def preprocesar_imagen(ruta_imagen):
+    """Mejora la imagen con OpenCV y devuelve la ruta de un archivo temporal listo para el OCR"""
+    imagen = cv2.imread(ruta_imagen)
+    gris = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
+    
+    gris_suav = cv2.GaussianBlur(gris, (5, 5), 0)
+    bordes = cv2.Canny(gris_suav, 75, 200)
+    contornos, _ = cv2.findContours(bordes, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contornos = sorted(contornos, key=cv2.contourArea, reverse=True)
+    
+    documento = gris
+    for contorno in contornos:
+        perimetro = cv2.arcLength(contorno, True)
+        aproximacion = cv2.approxPolyDP(contorno, 0.02 * perimetro, True)
+        if len(aproximacion) == 4:
+            pts = aproximacion.reshape(4, 2).astype("float32")
+            documento = aplicar_perspectiva(gris, pts)
+            break
+    
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    mejorado = clahe.apply(documento)
+    sin_ruido = cv2.fastNlMeansDenoising(mejorado, h=10)
+    binaria = cv2.adaptiveThreshold(
+        sin_ruido, 255,
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY, 11, 2
+    )
+    
+    # Guardamos en un archivo temporal y devolvemos su ruta
+    tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+    cv2.imwrite(tmp.name, binaria)
+    tmp.close()
+    return tmp.name
+
 
 def ocr_space_ocr(ruta_imagen):
     """OCR con api.ocr.space"""
@@ -42,7 +113,7 @@ def extraer_codigo_nacional(texto):
     return None
 
 def request_cima(codigo_nacional):
-    """Consulta CIMA, descarga Ficha Técnica y Prospecto, y los fusiona"""
+    """Consulta CIMA, descarga Ficha Técnica y Prospecto, y los fusiona """
     url = f"https://cima.aemps.es/cima/rest/presentacion/{codigo_nacional}"
     respuesta = requests.get(url)
     if respuesta.status_code != 200:
