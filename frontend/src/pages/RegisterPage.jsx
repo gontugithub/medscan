@@ -1,98 +1,59 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    nombre: '',
-    apellidos: '',
-    email: '',
-    telefono: '',
-    fechaNacimiento: '',
-    password: ''
-  });
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <button onClick={() => navigate('/')} className="mb-4 text-2xl">←</button>
-      
-      <div className="max-w-md mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-2">Crear tu cuenta</h1>
-        <p className="text-center text-gray-600 mb-8">Regístrate para usar MedScan</p>
+    <div className="flex flex-col w-full h-full bg-white dark:bg-slate-900 relative">
+      <header className="px-6 pt-12 pb-2 shrink-0">
+        <h1 className="text-slate-900 dark:text-white tracking-tight text-[32px] font-bold leading-tight text-center">
+          Crea tu cuenta
+        </h1>
+        <p className="text-slate-500 dark:text-slate-400 text-center text-lg mt-2 font-medium">
+          Regístrate para usar MedScan
+        </p>
+      </header>
 
-        <div className="bg-white rounded-2xl shadow-lg p-6">
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            <div>
-              <label className="block text-gray-700 mb-1">Nombre</label>
-              <input
-                placeholder="Mario"
-                className="w-full p-3 border rounded-lg"
-                value={formData.nombre}
-                onChange={(e) => setFormData({...formData, nombre: e.target.value})}
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 mb-1">Apellidos</label>
-              <input
-                placeholder="García López"
-                className="w-full p-3 border rounded-lg"
-                value={formData.apellidos}
-                onChange={(e) => setFormData({...formData, apellidos: e.target.value})}
-              />
-            </div>
+      <main className="flex-1 w-full px-6 py-4 flex flex-col gap-6 overflow-y-auto no-scrollbar">
+        <div className="flex flex-col gap-2">
+          <label htmlFor="nombre" className="text-slate-900 dark:text-white text-lg font-semibold ml-1">Nombre completo</label>
+          <div className="relative flex items-center">
+            <input id="nombre" type="text" placeholder="Ej. María" className="w-full rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 focus:border-primary h-16 p-4 text-lg text-slate-900 dark:text-white" />
+            <span className="material-symbols-outlined absolute right-4 text-slate-400 pointer-events-none">person</span>
           </div>
+        </div>
 
-          <div className="mb-3">
-            <label className="block text-gray-700 mb-1">Correo electrónico</label>
-            <input
-              type="email"
-              placeholder="ejemplos@domain.com"
-              className="w-full p-3 border rounded-lg"
-              value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
-            />
+        <div className="flex flex-col gap-2">
+          <label htmlFor="email" className="text-slate-900 dark:text-white text-lg font-semibold ml-1">Correo electrónico</label>
+          <div className="relative flex items-center">
+            <input id="email" type="email" placeholder="ejemplo@correo.com" className="w-full rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 focus:border-primary h-16 p-4 text-lg text-slate-900 dark:text-white" />
+            <span className="material-symbols-outlined absolute right-4 text-slate-400 pointer-events-none">mail</span>
           </div>
+        </div>
 
-          <div className="mb-3">
-            <label className="block text-gray-700 mb-1">Teléfono móvil</label>
-            <input
-              type="tel"
-              placeholder="800 000 000"
-              className="w-full p-3 border rounded-lg"
-              value={formData.telefono}
-              onChange={(e) => setFormData({...formData, telefono: e.target.value})}
-            />
+        <div className="flex flex-col gap-2">
+          <label htmlFor="password" className="text-slate-900 dark:text-white text-lg font-semibold ml-1">Contraseña</label>
+          <div className="relative flex items-center">
+            <input id="password" type="password" placeholder="Mínimo 8 caracteres" className="w-full rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 focus:border-primary h-16 p-4 text-lg text-slate-900 dark:text-white" />
+            <span className="material-symbols-outlined absolute right-4 text-slate-400 cursor-pointer">visibility</span>
           </div>
+        </div>
 
-          <div className="mb-3">
-            <label className="block text-gray-700 mb-1">Fecha de nacimiento</label>
-            <input
-              type="date"
-              className="w-full p-3 border rounded-lg"
-              value={formData.fechaNacimiento}
-              onChange={(e) => setFormData({...formData, fechaNacimiento: e.target.value})}
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-1">Contraseña</label>
-            <input
-              type="password"
-              className="w-full p-3 border rounded-lg"
-              value={formData.password}
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
-            />
-          </div>
-
-          <button className="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold mb-3">
+        <div className="pt-4 pb-2">
+          <button className="w-full bg-primary hover:bg-blue-700 text-white rounded-xl h-16 text-xl font-bold tracking-wide shadow-md active:scale-[0.98] flex items-center justify-center gap-2">
             Registrarse
+            <span className="material-symbols-outlined text-2xl">arrow_forward</span>
           </button>
+        </div>
 
-          <p className="text-center text-gray-600">
-            ¿Ya tienes cuenta? <button onClick={() => navigate('/login')} className="text-blue-600 font-semibold">Inicia sesión</button>
+        <div className="pb-8 pt-2 text-center">
+          <p className="text-slate-500 dark:text-slate-400 text-lg">
+            ¿Ya tienes cuenta? 
+            <button onClick={() => navigate('/login')} className="text-primary font-bold hover:underline ml-1">Inicia sesión</button>
           </p>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

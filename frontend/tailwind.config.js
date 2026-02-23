@@ -4,21 +4,25 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: "class",
   theme: {
     extend: {
-      fontFamily: {
-        lexend: ['Lexend', 'sans-serif'],
-      },
       colors: {
-        primary: {
-          500: '#1775d3',
-        },
-        slate: {
-          600: '#4e7397',
-          900: '#0e141b',
-        }
-      }
+        "primary": "#1775d3",
+        "primary-dark": "#125ea8",
+        "background-light": "#FAFAFA",
+        "background-dark": "#111921",
+        "text-main": "#0e141b",
+        "text-sub": "#4e7397",
+        "danger": "#F44336",
+      },
+      fontFamily: {
+        "display": ["Lexend", "sans-serif"]
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/container-queries')
+  ],
 }

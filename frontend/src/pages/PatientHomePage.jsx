@@ -5,59 +5,50 @@ const PatientHomePage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm p-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold">Hola, Paca</h1>
-        <button className="text-2xl">🔍</button>
+    <div className="flex flex-col w-full h-full bg-background-light dark:bg-background-dark">
+      <header className="flex items-center justify-between px-6 pt-12 pb-4">
+        <div className="flex flex-col">
+          <span className="text-slate-500 dark:text-slate-400 text-lg font-medium">Buenos días,</span>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white leading-tight">Hola, Paca</h1>
+        </div>
+        <button className="flex items-center justify-center w-12 h-12 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700">
+          <span className="material-symbols-outlined text-2xl text-slate-700 dark:text-slate-200">settings</span>
+        </button>
       </header>
 
-      <div className="p-4">
-        {/* Botones de acción */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <button 
-            onClick={() => navigate('/scan')}
-            className="bg-blue-600 text-white p-6 rounded-xl flex flex-col items-center"
-          >
-            <span className="text-3xl mb-2">📷</span>
-            <span>Escanear</span>
-          </button>
-          <button 
-            onClick={() => navigate('/medications')}
-            className="bg-green-600 text-white p-6 rounded-xl flex flex-col items-center"
-          >
-            <span className="text-3xl mb-2">💊</span>
-            <span>Descargar medicamentos</span>
-          </button>
-        </div>
+      <main className="flex-1 flex flex-col gap-6 px-6 py-4">
+        {/* Botón Gigante de Escaneo */}
+        <button 
+          onClick={() => navigate('/camera')}
+          className="relative flex flex-col items-center justify-center w-full min-h-[200px] bg-primary hover:bg-blue-700 text-white rounded-2xl shadow-lg active:scale-[0.98] transition-all"
+        >
+          <div className="flex flex-col items-center gap-4 p-6">
+            <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center">
+              <span className="material-symbols-outlined text-white" style={{ fontSize: '48px' }}>photo_camera</span>
+            </div>
+            <span className="text-2xl font-bold leading-tight">Escanear<br/>medicamento</span>
+          </div>
+        </button>
 
-        {/* Mis medicamentos */}
-        <div className="bg-white rounded-xl shadow p-4 mb-6">
-          <h2 className="font-semibold mb-3">Mis medicamentos</h2>
-          <div className="border-l-4 border-blue-500 pl-3 py-2">
-            <p className="font-medium">Tarea 2 tomas parciales</p>
-            <p className="text-sm text-gray-500">extra tolas · Hoy</p>
+        {/* Botón Secundario */}
+        <button className="flex flex-col items-center justify-center w-full min-h-[160px] bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl shadow-sm active:scale-[0.98] transition-all">
+          <div className="flex flex-col items-center gap-3 p-6">
+            <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+              <span className="material-symbols-outlined text-4xl text-slate-600 dark:text-slate-300">pill</span>
+            </div>
+            <span className="text-xl font-bold">Mis medicamentos</span>
+          </div>
+        </button>
+
+        {/* Resumen */}
+        <div className="w-full bg-primary/10 rounded-xl p-5 flex items-start gap-4">
+          <span className="material-symbols-outlined text-primary text-3xl mt-1">calendar_month</span>
+          <div className="flex flex-col">
+            <h3 className="font-bold text-slate-900 dark:text-white text-lg">Hoy</h3>
+            <p className="text-slate-600 dark:text-slate-300 text-base">Tienes 2 tomas pendientes esta tarde.</p>
           </div>
         </div>
-
-        {/* Botones de ayuda */}
-        <div className="grid grid-cols-2 gap-4">
-          <button className="bg-gray-200 p-4 rounded-xl font-medium">
-            🆘 Ayuda
-          </button>
-          <button className="bg-gray-200 p-4 rounded-xl font-medium">
-            👨‍⚕️ Contactar Médico
-          </button>
-        </div>
-      </div>
-
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around p-3">
-        <button className="text-blue-600">🏠</button>
-        <button onClick={() => navigate('/calendar')}>📅</button>
-        <button onClick={() => navigate('/chat')}>💬</button>
-        <button>👤</button>
-      </nav>
+      </main>
     </div>
   );
 };
