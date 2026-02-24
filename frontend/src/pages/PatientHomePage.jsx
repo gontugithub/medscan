@@ -1,13 +1,20 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import MedScanLogo from '../components/MedScan_Logo.jsx';
 
 export default function PatientHomePage() {
   const navigate = useNavigate();
   
   return (
     <div className="flex-1 flex flex-col p-6">
-      <header className="pt-8 mb-10">
-        <h1 className="text-4xl font-black text-text-main tracking-tight">Hola, Paca</h1>
+      {/* Header ajustado para que el logo esté al lado del texto */}
+      <header className="pt-8 mb-10 flex items-center gap-4">
+        <div className="w-16 h-16 shrink-0">
+          <MedScanLogo className="w-full h-full object-contain" />
+        </div>
+        <h1 className="text-4xl font-black text-text-main tracking-tight leading-tight">
+          Hola, Paca
+        </h1>
       </header>
       
       <div className="flex-1 flex flex-col gap-6 justify-center pb-10">

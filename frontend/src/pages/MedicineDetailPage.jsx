@@ -13,7 +13,7 @@ export default function MedicineDetailPage() {
 const goToChat = () => {
   navigate('/processing', {
     state: {
-      cn: cn,               // 👈 indica que viene por CN, no por foto
+      cn: cn,               
       nombreMedicamento: nombre,
       fotoUrl: fotoUrl,
     },
