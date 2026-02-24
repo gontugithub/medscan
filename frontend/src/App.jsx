@@ -17,7 +17,7 @@ import ProcessingPage from './pages/ProcessingPage';
 import ChatPage from './pages/ChatPage';
 import MedicationListPage from './pages/MedicationListPage';
 import AlarmPage from './pages/AlarmPage';
-
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 export default function App() {
   return (
     <BrowserRouter>
@@ -39,7 +39,8 @@ export default function App() {
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/medications" element={<MedicationListPage />} />
           <Route path="/alarm" element={<AlarmPage />} />
-        </Routes>
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />        
+          </Routes>
       </div>
     </BrowserRouter>
   );

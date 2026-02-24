@@ -17,9 +17,9 @@ export default function LandingPage() {
         <MedScanLogo className="w-28 h-28" />
 
         <div className="flex flex-col gap-3">
-          <h1 className="text-6xl font-black text-text-main tracking-tight">
-            MedScan
-          </h1>
+        <h1 className="text-6xl font-black tracking-tight text-[rgb(24,116,199)]">
+          MedScan
+        </h1>
           <p className="text-xl font-medium text-slate-500 max-w-[280px] leading-relaxed mx-auto">
             Escanea, entiende y nunca olvides tu medicación
           </p>
