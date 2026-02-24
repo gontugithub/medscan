@@ -41,6 +41,33 @@ def extraer_codigo_nacional(texto):
             return match.group(1)
     return None
 
+def get_info_medicamento(codigo_nacional):
+    url_presentacion = f"https://cima.aemps.es/cima/rest/presentacion/{codigo_nacional}"
+    resp = requests.get(url_presentacion)
+
+    if resp.status_code != 200:
+        return None
+
+    datos = resp.json()
+    nombre = datos.get("nombre", "Desconocido")
+    nregistro = datos.get("nregistro")
+
+    if not nregistro:
+        return None
+
+    # Patrón correcto de CIMA
+    foto_url = f"https://cima.aemps.es/cima/fotos/full/materialas/{nregistro}/{nregistro}_materialas.jpg"
+
+    resp_foto = requests.head(foto_url)
+    if resp_foto.status_code != 200:
+        foto_url = None
+
+    return {
+        "nombre": nombre,
+        "nregistro": nregistro,
+        "foto_url": foto_url,
+    }
+
 def request_cima(codigo_nacional):
     """Consulta CIMA, descarga Ficha Técnica y Prospecto, y los fusiona"""
     url = f"https://cima.aemps.es/cima/rest/presentacion/{codigo_nacional}"
