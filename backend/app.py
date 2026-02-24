@@ -10,7 +10,7 @@ app.secret_key = os.getenv('SECRET_KEY')
 
 CORS(app, supports_credentials=True, origins=[
     "http://localhost:5173",
-    "https://medscanweagain-gmripy82i-gontugithubs-projects.vercel.app"
+    "https://medscanweagain.vercel.app"
 ])
 
 # Importar y registrar las rutas
@@ -22,4 +22,4 @@ if __name__ == '__main__':
     print("   → http://localhost:5000")
     print("   → POST /upload")
     print("   → GET  /pregunta?pregunta=¿Qué dosis tomar?")
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
