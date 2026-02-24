@@ -157,7 +157,7 @@ const ChatPage = () => {
         </div>
 
         <p className="text-[11px] leading-tight text-center text-slate-400 font-medium px-2">
-          * Nota legal: Esta conversación es generada de forma automática por una Inteligencia Artificial (MedScan IA) basada en el prospecto oficial. En caso de duda médica grave, consulte siempre a su médico o farmacéutico.
+          * Respuestas generadas por IA según el prospecto. Consulte a un profesional sanitario ante dudas graves.
         </p>
       </footer>
     </div>
