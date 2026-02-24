@@ -53,5 +53,16 @@ export const api = {
   const response = await fetch(`${BASE_URL}/medicamento/${codigoNacional}`);
   if (!response.ok) return null; // Si falla, no es crítico
   return await response.json();
-    }
+    },
+
+  uploadByCn: async (cn) => {
+  const response = await fetch(`${BASE_URL}/upload-by-cn/${cn}`, {
+    method: 'POST',
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Error al procesar el medicamento');
+  }
+  return await response.json();
+},
 };

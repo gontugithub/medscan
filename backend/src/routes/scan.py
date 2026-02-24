@@ -85,3 +85,25 @@ def info_medicamento(codigo_nacional):
         "nombre":          info["nombre"],
         "foto_url":        info["foto_url"],   # null si no hay foto
     }), 200
+
+@scan_bp.route('/upload-by-cn/<string:codigo_nacional>', methods=['POST'])
+def upload_by_cn(codigo_nacional):
+    if not codigo_nacional.isdigit() or len(codigo_nacional) != 6:
+        return jsonify({"error": "Código nacional inválido"}), 400
+
+    info = request_cima(codigo_nacional)
+    if not info:
+        return jsonify({"error": "Medicamento no encontrado en CIMA"}), 404
+
+    source_id = subir_a_chatpdf(info['ruta_pdf'])
+    if not source_id:
+        return jsonify({"error": "Error al subir a ChatPDF"}), 500
+
+    session['source_id'] = source_id
+
+    return jsonify({
+        "mensaje": "✅ Listo",
+        "nombre_medicamento": info['nombre'],
+        "source_id": source_id,
+        "codigo_nacional": codigo_nacional,
+    }), 200

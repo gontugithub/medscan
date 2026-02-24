@@ -8,43 +8,49 @@ export default function ProcessingPage() {
   const [error, setError] = useState(null);
   const hasFetched = useRef(false); 
 
-  useEffect(() => {
-    const foto = location.state?.foto;
+useEffect(() => {
+  const foto = location.state?.foto;
+  const cn = location.state?.cn;
+  const nombreMedicamento = location.state?.nombreMedicamento;
+  const fotoUrl = location.state?.fotoUrl;
 
-    if (!foto) {
-      setError("No se recibió ninguna imagen. Vuelve a escanear.");
-      return;
-    }
+  if (!foto && !cn) {
+    setError("No se recibió ninguna imagen ni código nacional.");
+    return;
+  }
 
-    const processMedication = async () => {
-      if (hasFetched.current) return;
-      hasFetched.current = true;
+  const processMedication = async () => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
 
-      const formData = new FormData();
-      formData.append('foto', foto, 'escaneo.jpg');
+    try {
+      let data;
 
-      try {
-        // Usamos el servicio centralizado que acabamos de limpiar
-        const data = await api.uploadImage(formData);
-
-        const infoExtra = await api.getMedicamentoInfo(data.codigo_nacional).catch(() => null);
-
-        // Si todo va bien (200 OK), navegamos al chat con los datos
-        navigate('/chat', { 
-          state: { 
-            nombreMedicamento: data.nombre_medicamento,
-            sourceId: data.source_id,
-            fotoUrl: infoExtra?.foto_url || null,
-          } 
-        });
-
-      } catch (err) {
-        setError(err.message);
+      if (foto) {
+        // Flujo normal: viene de la cámara
+        const formData = new FormData();
+        formData.append('foto', foto, 'escaneo.jpg');
+        data = await api.uploadImage(formData);
+      } else {
+        // Flujo nuevo: viene de la lista de medicamentos con CN
+        data = await api.uploadByCn(cn);
       }
-    };
 
-    processMedication();
-  }, [navigate, location]);
+      navigate('/chat', {
+        state: {
+          nombreMedicamento: data.nombre_medicamento || nombreMedicamento,
+          sourceId: data.source_id,
+          fotoUrl: data.foto_url || fotoUrl,
+        },
+      });
+
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  processMedication();
+}, [navigate, location]);
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center bg-bg-app p-6 h-screen">

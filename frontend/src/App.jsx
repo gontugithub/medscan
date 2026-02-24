@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-// Importa todas las páginas (Asegúrate de crearlas en src/pages/)
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -16,12 +15,13 @@ import CameraPage from './pages/CameraPage';
 import ProcessingPage from './pages/ProcessingPage';
 import ChatPage from './pages/ChatPage';
 import MedicationListPage from './pages/MedicationListPage';
+import MedicineDetailPage from './pages/MedicineDetailPage';  // 👈
 import AlarmPage from './pages/AlarmPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+
 export default function App() {
   return (
     <BrowserRouter>
-      {/* Contenedor que simula la pantalla del móvil centrada en PC */}
       <div className="mobile-container">
         <Routes>
           <Route path="/" element={<LandingPage />} />
@@ -38,9 +38,10 @@ export default function App() {
           <Route path="/processing" element={<ProcessingPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/medications" element={<MedicationListPage />} />
+          <Route path="/medicine-detail" element={<MedicineDetailPage />} />  {/* 👈 */}
           <Route path="/alarm" element={<AlarmPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />        
-          </Routes>
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        </Routes>
       </div>
     </BrowserRouter>
   );
