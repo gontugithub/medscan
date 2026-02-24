@@ -8,8 +8,10 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY')
 
-# Permitir llamadas desde React / Postman / móvil
-CORS(app)
+CORS(app, supports_credentials=True, origins=[
+    "http://localhost:5173",
+    "https://medscanweagain-gmripy82i-gontugithubs-projects.vercel.app"
+])
 
 # Importar y registrar las rutas
 from src.routes.scan import scan_bp

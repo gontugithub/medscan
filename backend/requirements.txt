@@ -3,3 +3,4 @@ Flask-Cors==5.0.0
 requests==2.32.0
 python-dotenv==1.0.1
 pypdf
+gunicorn==25.1.0
