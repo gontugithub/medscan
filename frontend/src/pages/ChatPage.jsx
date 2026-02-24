@@ -6,10 +6,8 @@ const ChatPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Recuperamos el nombre del medicamento que pasamos desde el ProcessingPage
   const nombreMedicamento = location.state?.nombreMedicamento || 'el medicamento';
 
-  // Mensaje inicial adaptado
   const [messages, setMessages] = useState([
     { 
       text: `Hola Paca. Soy MedScan IA. He analizado el prospecto oficial de ${nombreMedicamento}. ¿Qué duda tienes sobre cómo tomarlo, efectos secundarios o contraindicaciones?`, 
@@ -18,9 +16,47 @@ const ChatPage = () => {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false); // Estado para el micrófono
   
-  // Referencia para hacer scroll automático al final de los mensajes
   const messagesEndRef = useRef(null);
+
+  // --- LÓGICA DE RECONOCIMIENTO DE VOZ (Dictado) ---
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+
+  if (recognition) {
+    recognition.lang = 'es-ES';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(transcript);
+      setIsListening(false);
+    };
+
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => setIsListening(false);
+  }
+
+  const toggleListen = () => {
+    if (!recognition) return alert("Tu navegador no soporta dictado por voz.");
+    if (isListening) {
+      recognition.stop();
+    } else {
+      setIsListening(true);
+      recognition.start();
+    }
+  };
+
+  // --- FUNCIÓN DE LECTURA ---
+  const leerEnVozAlta = (texto) => {
+    window.speechSynthesis.cancel();
+    const lectura = new SpeechSynthesisUtterance(texto);
+    lectura.lang = 'es-ES'; 
+    lectura.rate = 1;       
+    window.speechSynthesis.speak(lectura);
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -30,35 +66,19 @@ const ChatPage = () => {
     scrollToBottom();
   }, [messages]);
 
-  // LÓGICA INTACTA DE TU CÓDIGO
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
-    
     const preguntaUsuario = input.trim();
-    
-    // 1. Añadimos la pregunta del usuario a la pantalla
     setMessages(prev => [...prev, { text: preguntaUsuario, sender: 'user' }]);
     setInput('');
     setIsLoading(true);
 
     try {
-      // 2. Llamamos a tu backend mediante el servicio centralizado
       const data = await api.askQuestion(preguntaUsuario);
-      
-      // 3. Añadimos la respuesta del bot. 
       const textoRespuesta = data.respuesta || data.content || data.pregunta || "No he recibido una respuesta válida del servidor.";
-
-      setMessages(prev => [...prev, { 
-        text: textoRespuesta, 
-        sender: 'bot' 
-      }]);
-
+      setMessages(prev => [...prev, { text: textoRespuesta, sender: 'bot' }]);
     } catch (error) {
-      console.error("Error consultando al bot:", error);
-      setMessages(prev => [...prev, { 
-        text: 'Lo siento, ha habido un problema de conexión al consultar el prospecto. ¿Puedes intentarlo de nuevo?', 
-        sender: 'bot' 
-      }]);
+      setMessages(prev => [...prev, { text: 'Lo siento, ha habido un problema. ¿Puedes intentarlo de nuevo?', sender: 'bot' }]);
     } finally {
       setIsLoading(false);
     }
@@ -67,9 +87,7 @@ const ChatPage = () => {
   return (
     <div className="bg-[#f6f7f8] text-[#1f2937] h-[100dvh] flex flex-col w-full relative font-display">
       
-      {/* Cabecera Adaptada para Mayores */}
       <header className="bg-white px-5 pt-10 pb-4 shadow-sm z-20 sticky top-0 border-b border-slate-100 flex flex-col gap-4">
-        {/* Botón Volver gigante y claro */}
         <button 
           onClick={() => navigate('/home')} 
           className="flex items-center gap-2 text-[#1775d3] font-bold text-lg bg-[#1775d3]/10 w-fit px-5 py-3 rounded-xl active:scale-95 transition-transform"
@@ -78,16 +96,11 @@ const ChatPage = () => {
           Volver al inicio
         </button>
 
-        {/* Info de la IA */}
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 bg-[#1775d3] rounded-full flex items-center justify-center text-white shadow-md shrink-0 border-4 border-[#1775d3]/20">
             <span className="material-symbols-outlined text-[32px]">smart_toy</span>
           </div>
           <div>
-            {/* AQUÍ ESTÁ EL CAMBIO: 
-               Se aplica un degradado (gradient) del azul principal a un verde esmeralda,
-               y se recorta el fondo con el texto (bg-clip-text text-transparent).
-            */}
             <h1 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#1775d3] to-green-500 pb-1">
               MedScan IA
             </h1>
@@ -98,28 +111,32 @@ const ChatPage = () => {
         </div>
       </header>
 
-      {/* Área de Chat (Letra más grande y clara) */}
       <main className="flex-1 overflow-y-auto px-5 py-6 space-y-6 scroll-smooth pb-4">
         {messages.map((msg, index) => (
           <div key={index} className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}>
-            
-            {/* Etiqueta de quién habla (Crucial para abuelos) */}
             <span className="text-sm font-bold text-slate-400 mb-1 ml-2 mr-2">
               {msg.sender === 'user' ? 'Tú' : 'MedScan IA'}
             </span>
 
-            {/* Burbuja de texto */}
-            <div className={`p-5 max-w-[85%] rounded-[20px] shadow-sm text-xl font-medium leading-relaxed
+            <div className={`p-5 max-w-[85%] rounded-[20px] shadow-sm text-xl font-medium leading-relaxed flex flex-col
               ${msg.sender === 'user' 
                 ? 'bg-[#1775d3] text-white rounded-tr-sm' 
                 : 'bg-white text-[#1f2937] border-2 border-slate-100 rounded-tl-sm'}`}
             >
-              {msg.text}
+              <span>{msg.text}</span>
+              {msg.sender === 'bot' && (
+                <button 
+                  onClick={() => leerEnVozAlta(msg.text)}
+                  className="mt-3 flex items-center self-start text-[#1775d3] hover:opacity-70 transition-opacity bg-blue-50 px-3 py-1 rounded-full border border-blue-100"
+                >
+                  <span className="material-symbols-outlined text-lg">volume_up</span>
+                  <span className="text-[12px] ml-1 font-bold uppercase tracking-wider">Escuchar</span>
+                </button>
+              )}
             </div>
           </div>
         ))}
         
-        {/* Indicador de "Escribiendo..." */}
         {isLoading && (
           <div className="flex flex-col items-start">
             <span className="text-sm font-bold text-slate-400 mb-1 ml-2">MedScan IA</span>
@@ -130,27 +147,37 @@ const ChatPage = () => {
             </div>
           </div>
         )}
-        
-        {/* Ancla invisible para el auto-scroll */}
         <div ref={messagesEndRef} />
       </main>
 
-      {/* Input de Chat y Aviso Legal */}
       <footer className="bg-white p-5 border-t border-slate-200 sticky bottom-0 z-20 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
         <div className="flex gap-3 items-center mb-3">
+          
+          {/* BOTÓN DE DICTADO (Micro) */}
+          <button 
+            onClick={toggleListen}
+            className={`w-[64px] h-[64px] rounded-2xl flex items-center justify-center shrink-0 active:scale-95 transition-all shadow-lg 
+              ${isListening ? 'bg-red-500 text-white animate-pulse' : 'bg-orange-500 text-white'}`}
+          >
+            <span className="material-symbols-outlined text-[32px]">
+              {isListening ? 'mic' : 'mic_none'}
+            </span>
+          </button>
+
           <input 
             type="text" 
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
             disabled={isLoading}
-            placeholder={isLoading ? "Buscando en el prospecto..." : "Escribe tu duda aquí..."}
+            placeholder={isListening ? "Escuchando..." : "Escribe tu duda..."}
             className="flex-1 h-[64px] px-6 bg-slate-100 border-2 border-transparent rounded-2xl text-xl outline-none focus:border-[#1775d3] focus:bg-white transition-all placeholder:text-slate-400 disabled:opacity-50" 
           />
+
           <button 
             onClick={sendMessage}
             disabled={isLoading || !input.trim()}
-            className="w-[64px] h-[64px] bg-[#1775d3] disabled:bg-slate-300 text-white rounded-2xl flex items-center justify-center shrink-0 active:scale-95 transition-transform shadow-lg shadow-[#1775d3]/30 disabled:shadow-none"
+            className="w-[64px] h-[64px] bg-[#1775d3] disabled:bg-slate-300 text-white rounded-2xl flex items-center justify-center shrink-0 active:scale-95 transition-transform shadow-lg shadow-[#1775d3]/30"
           >
             {isLoading ? (
               <span className="material-symbols-outlined text-[32px] animate-spin">autorenew</span>
@@ -160,7 +187,6 @@ const ChatPage = () => {
           </button>
         </div>
 
-        {/* Texto Legal */}
         <p className="text-[11px] leading-tight text-center text-slate-400 font-medium px-2">
           * Nota legal: Esta conversación es generada de forma automática por una Inteligencia Artificial (MedScan IA) basada en el prospecto oficial. En caso de duda médica grave, consulte siempre a su médico o farmacéutico.
         </p>
