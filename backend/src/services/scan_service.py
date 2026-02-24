@@ -151,7 +151,22 @@ def preguntar_a_pdf(source_id, pregunta):
     }
     data = {
         "sourceId": source_id,
-        "messages": [{"role": "user", "content": f"Responde únicamente usando el PDF: {pregunta}"}]
+        "messages": [
+            {
+                "role": "user",
+                "content": (
+                    "Eres un asistente médico que ayuda a personas mayores a entender "
+                    "su medicación. Responde SIEMPRE siguiendo estas reglas:\n"
+                    "1. Usa frases cortas y simples, sin tecnicismos médicos.\n"
+                    "2. Máximo 3-4 frases por respuesta.\n"
+                    "3. Si hay una lista, usa como máximo 3 puntos.\n"
+                    "4. Responde solo con información del prospecto.\n"
+                    "5. Si no está en el prospecto, di: 'Esa información no aparece "
+                    "en el prospecto. Consulte a su médico o farmacéutico.'\n\n"
+                    f"Pregunta: {pregunta}"
+                )
+            }
+        ]
     }
     response = requests.post(url, headers=headers, json=data)
     if response.status_code == 200:
