@@ -4,14 +4,29 @@ import { useNavigate } from 'react-router-dom';
 export default function LoginPage() {
   const navigate = useNavigate();
   
-  // Estados para los campos, errores y visibilidad de contraseña
-  const [identifier, setIdentifier] = useState(''); // Puede ser email o usuario
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [identifierError, setIdentifierError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  // Validación de Email o Usuario
+  // --- LÓGICA DE REDIRECCIÓN ---
+  const handleLogin = () => {
+    const loginValue = identifier.toLowerCase();
+
+    if (loginValue.includes('paciente')) {
+      // Redirigir a mis medicamentos
+      navigate('/home');
+    } else if (loginValue.includes('medico')) {
+      // Redirigir a mis pacientes
+      navigate('/dashboard');
+    } else {
+      // Ruta por defecto o manejo de error si no contiene ninguna palabra clave
+      console.log("Usuario no identificado como médico o paciente");
+    }
+  };
+  // -----------------------------
+
   const handleIdentifierChange = (e) => {
     const value = e.target.value;
     setIdentifier(value);
@@ -19,7 +34,6 @@ export default function LoginPage() {
     if (!value) {
       setIdentifierError('');
     } else if (value.includes('@')) {
-      // Regex básico para validar estructura de email (ejemplo@correo.com)
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(value)) {
         setIdentifierError('Ingresa un correo válido.');
@@ -27,7 +41,6 @@ export default function LoginPage() {
         setIdentifierError('');
       }
     } else {
-      // Validación básica para nombre de usuario (mínimo 3 caracteres)
       if (value.length < 3) {
         setIdentifierError('El usuario debe tener al menos 3 caracteres.');
       } else {
@@ -36,12 +49,9 @@ export default function LoginPage() {
     }
   };
 
-  // Validación de Contraseña
   const handlePasswordChange = (e) => {
     const value = e.target.value;
     setPassword(value);
-
-    // Regex: Mínimo 8 caracteres, al menos 1 letra mayúscula, 1 minúscula y 1 número
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\w\W]{8,}$/;
     
     if (!value) {
@@ -53,7 +63,6 @@ export default function LoginPage() {
     }
   };
 
-  // Comprueba si el formulario es válido para habilitar el botón
   const isFormValid = identifier && password && !identifierError && !passwordError;
 
   return (
@@ -65,7 +74,6 @@ export default function LoginPage() {
       <h2 className="text-3xl font-bold mb-8 text-text-main">Bienvenido de nuevo</h2>
       
       <div className="space-y-6">
-        {/* Campo Email/Usuario */}
         <div>
           <label className="block text-lg font-medium text-slate-700 mb-2">Email o nombre de usuario</label>
           <input 
@@ -78,7 +86,6 @@ export default function LoginPage() {
           {identifierError && <p className="text-red-500 text-sm mt-1">{identifierError}</p>}
         </div>
 
-        {/* Campo Contraseña */}
         <div>
           <label className="block text-lg font-medium text-slate-700 mb-2">Contraseña</label>
           <div className="relative">
@@ -103,9 +110,9 @@ export default function LoginPage() {
           <span className="text-primary font-medium text-lg cursor-pointer hover:underline">¿Olvidaste tu contraseña?</span>
         </div>
 
-        {/* Botón Entrar */}
+        {/* Botón Entrar modificado */}
         <button 
-          onClick={() => navigate('/role')} 
+          onClick={handleLogin} 
           disabled={!isFormValid}
           className={`w-full h-16 text-white text-xl font-bold rounded-2xl shadow-lg mt-4 transition-all ${
             isFormValid 
