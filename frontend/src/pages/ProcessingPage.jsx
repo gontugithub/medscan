@@ -27,11 +27,14 @@ export default function ProcessingPage() {
         // Usamos el servicio centralizado que acabamos de limpiar
         const data = await api.uploadImage(formData);
 
+        const infoExtra = await api.getMedicamentoInfo(data.codigo_nacional).catch(() => null);
+
         // Si todo va bien (200 OK), navegamos al chat con los datos
         navigate('/chat', { 
           state: { 
             nombreMedicamento: data.nombre_medicamento,
-            sourceId: data.source_id 
+            sourceId: data.source_id,
+            fotoUrl: infoExtra?.foto_url || null,
           } 
         });
 
