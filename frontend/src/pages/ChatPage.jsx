@@ -11,7 +11,6 @@ const ChatPage = () => {
   const nombreMedicamento = location.state?.nombreMedicamento || 'el medicamento';
   const fotoUrl = location.state?.fotoUrl || null;
 
-  // Detectar idioma del navegador para el saludo inicial
   const isEn = navigator.language.startsWith('en');
 
   const [messages, setMessages] = useState([
@@ -30,7 +29,7 @@ const ChatPage = () => {
   const messagesEndRef = useRef(null);
   const silenceTimerRef = useRef(null);
 
-  // --- LÓGICA DE RECONOCIMIENTO DE VOZ ---
+  // --- RECONOCIMIENTO DE VOZ ---
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const recognition = useRef(null);
 
@@ -72,7 +71,7 @@ const ChatPage = () => {
     }
   };
 
-  // --- FUNCIÓN DE LECTURA (Voz Dinámica) ---
+  // --- LECTURA EN VOZ ALTA ---
   const toggleLeerEnVozAlta = (texto, index) => {
     if (speakingIndex === index) {
       window.speechSynthesis.cancel();
@@ -81,18 +80,14 @@ const ChatPage = () => {
     }
     window.speechSynthesis.cancel();
     const lectura = new SpeechSynthesisUtterance(texto);
-    
-    // Detección de idioma para la voz
     const esIngles = /[a-zA-Z]/.test(texto) && (texto.includes(' the ') || texto.includes(' you '));
     lectura.lang = esIngles ? 'en-US' : 'es-ES'; 
-    
     const voices = window.speechSynthesis.getVoices();
     const availableVoices = voices.filter(v => v.lang.includes(esIngles ? 'en' : 'es'));
     const maleVoice = availableVoices.find(v => 
       v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('jorge') || v.name.toLowerCase().includes('david')
     );
     if (maleVoice) lectura.voice = maleVoice;
-
     lectura.onstart = () => setSpeakingIndex(index);
     lectura.onend = () => setSpeakingIndex(null);
     window.speechSynthesis.speak(lectura);
@@ -109,7 +104,7 @@ const ChatPage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // --- ENVÍO DE MENSAJE CON PROMPT MULTILENGUAJE ---
+  // --- ENVÍO DE MENSAJE ---
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
     const preguntaUsuario = input.trim();
@@ -142,7 +137,7 @@ const ChatPage = () => {
   return (
     <div className="bg-[#f6f7f8] text-[#1f2937] h-[100dvh] flex flex-col w-full relative font-display overflow-hidden">
       
-      {/* Header Compacto y Bilingüe */}
+      {/* Header */}
       <header className="bg-white px-5 pt-6 pb-2 shadow-sm z-20 sticky top-0 border-b border-slate-100 flex flex-col gap-2">
         <BackButton />
         <div className="flex items-center gap-4">
@@ -168,26 +163,47 @@ const ChatPage = () => {
             <span className="text-xs font-bold text-slate-400 mb-1 px-1">
               {msg.sender === 'user' ? (isEn ? 'You' : 'Tú') : 'MedScan IA'}
             </span>
-            <div className={`max-w-[85%] rounded-[20px] shadow-sm p-4 ${
-              msg.sender === 'user' ? 'bg-[#1775d3] text-white rounded-tr-sm' : 'bg-white border-2 border-slate-100 rounded-tl-sm'
+
+            {/* ── Burbuja con foto como attachment en el primer mensaje ── */}
+            <div className={`max-w-[85%] rounded-[20px] shadow-sm overflow-hidden ${
+              msg.sender === 'user'
+                ? 'bg-[#1775d3] text-white rounded-tr-sm'
+                : 'bg-white border-2 border-slate-100 rounded-tl-sm'
             }`}>
-              <span className="text-lg font-medium leading-relaxed">{msg.text}</span>
-              {msg.sender === 'bot' && (
-                <button 
-                  onClick={() => toggleLeerEnVozAlta(msg.text, index)}
-                  className={`mt-3 flex items-center gap-2 px-3 py-1.5 rounded-xl border text-sm font-bold uppercase transition-all ${
-                    speakingIndex === index ? 'bg-red-50 text-red-600 border-red-200' : 'bg-blue-50 text-[#1775d3] border-blue-100'
-                  }`}
-                >
-                  <span className="material-symbols-outlined text-xl">
-                    {speakingIndex === index ? 'stop_circle' : 'volume_up'}
-                  </span>
-                  {speakingIndex === index ? (isEn ? 'Stop' : 'Detener') : (isEn ? 'Listen' : 'Escuchar')}
-                </button>
+              {index === 0 && fotoUrl && (
+                <img
+                  src={fotoUrl}
+                  alt={nombreMedicamento}
+                  className="w-full object-contain bg-slate-50 max-h-[200px]"
+                  onError={(e) => e.currentTarget.style.display = 'none'}
+                />
               )}
+              <div className="p-4">
+                <span className="text-lg font-medium leading-relaxed">{msg.text}</span>
+                {msg.sender === 'bot' && (
+                  <button 
+                    onClick={() => toggleLeerEnVozAlta(msg.text, index)}
+                    className={`mt-3 flex items-center gap-2 px-3 py-1.5 rounded-xl border text-sm font-bold uppercase transition-all ${
+                      speakingIndex === index
+                        ? 'bg-red-50 text-red-600 border-red-200'
+                        : 'bg-blue-50 text-[#1775d3] border-blue-100'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-xl">
+                      {speakingIndex === index ? 'stop_circle' : 'volume_up'}
+                    </span>
+                    {speakingIndex === index
+                      ? (isEn ? 'Stop' : 'Detener')
+                      : (isEn ? 'Listen' : 'Escuchar')}
+                  </button>
+                )}
+              </div>
             </div>
+
           </div>
         ))}
+
+        {/* Typing indicator */}
         {isLoading && (
           <div className="bg-white p-4 rounded-2xl border-2 border-slate-100 w-fit flex gap-2">
             <div className="w-2 h-2 bg-[#1775d3] rounded-full animate-bounce"></div>
