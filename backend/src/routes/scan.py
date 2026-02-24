@@ -42,7 +42,8 @@ def upload_image():
     return jsonify({
         "mensaje": "✅ Escaneo completado",
         "nombre_medicamento": info['nombre'],
-        "source_id": source_id
+        "source_id": source_id,
+        "codigo_nacional": cn,
     }), 200
 
 

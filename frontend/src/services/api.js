@@ -47,5 +47,11 @@ export const api = {
       console.error("API Error en askQuestion:", error);
       throw error;
     }
-  }
+  },
+
+  getMedicamentoInfo: async (codigoNacional) => {
+  const response = await fetch(`${BASE_URL}/medicamento/${codigoNacional}`);
+  if (!response.ok) return null; // Si falla, no es crítico
+  return await response.json();
+    }
 };

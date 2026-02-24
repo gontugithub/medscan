@@ -6,10 +6,9 @@ const ChatPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Recuperamos el nombre del medicamento que pasamos desde el ProcessingPage
   const nombreMedicamento = location.state?.nombreMedicamento || 'el medicamento';
+  const fotoUrl = location.state?.fotoUrl || null;
 
-  // Mensaje inicial adaptado
   const [messages, setMessages] = useState([
     { 
       text: `Hola Paca. Soy MedScan IA. He analizado el prospecto oficial de ${nombreMedicamento}. ¿Qué duda tienes sobre cómo tomarlo, efectos secundarios o contraindicaciones?`, 
@@ -19,7 +18,6 @@ const ChatPage = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  // Referencia para hacer scroll automático al final de los mensajes
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -30,22 +28,17 @@ const ChatPage = () => {
     scrollToBottom();
   }, [messages]);
 
-  // LÓGICA INTACTA DE TU CÓDIGO
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
     
     const preguntaUsuario = input.trim();
     
-    // 1. Añadimos la pregunta del usuario a la pantalla
     setMessages(prev => [...prev, { text: preguntaUsuario, sender: 'user' }]);
     setInput('');
     setIsLoading(true);
 
     try {
-      // 2. Llamamos a tu backend mediante el servicio centralizado
       const data = await api.askQuestion(preguntaUsuario);
-      
-      // 3. Añadimos la respuesta del bot. 
       const textoRespuesta = data.respuesta || data.content || data.pregunta || "No he recibido una respuesta válida del servidor.";
 
       setMessages(prev => [...prev, { 
@@ -67,9 +60,8 @@ const ChatPage = () => {
   return (
     <div className="bg-[#f6f7f8] text-[#1f2937] h-[100dvh] flex flex-col w-full relative font-display">
       
-      {/* Cabecera Adaptada para Mayores */}
+      {/* Cabecera */}
       <header className="bg-white px-5 pt-10 pb-4 shadow-sm z-20 sticky top-0 border-b border-slate-100 flex flex-col gap-4">
-        {/* Botón Volver gigante y claro */}
         <button 
           onClick={() => navigate('/home')} 
           className="flex items-center gap-2 text-[#1775d3] font-bold text-lg bg-[#1775d3]/10 w-fit px-5 py-3 rounded-xl active:scale-95 transition-transform"
@@ -78,16 +70,11 @@ const ChatPage = () => {
           Volver al inicio
         </button>
 
-        {/* Info de la IA */}
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 bg-[#1775d3] rounded-full flex items-center justify-center text-white shadow-md shrink-0 border-4 border-[#1775d3]/20">
             <span className="material-symbols-outlined text-[32px]">smart_toy</span>
           </div>
           <div>
-            {/* AQUÍ ESTÁ EL CAMBIO: 
-               Se aplica un degradado (gradient) del azul principal a un verde esmeralda,
-               y se recorta el fondo con el texto (bg-clip-text text-transparent).
-            */}
             <h1 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#1775d3] to-green-500 pb-1">
               MedScan IA
             </h1>
@@ -98,24 +85,34 @@ const ChatPage = () => {
         </div>
       </header>
 
-      {/* Área de Chat (Letra más grande y clara) */}
+      {/* Área de Chat */}
       <main className="flex-1 overflow-y-auto px-5 py-6 space-y-6 scroll-smooth pb-4">
         {messages.map((msg, index) => (
           <div key={index} className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}>
             
-            {/* Etiqueta de quién habla (Crucial para abuelos) */}
             <span className="text-sm font-bold text-slate-400 mb-1 ml-2 mr-2">
               {msg.sender === 'user' ? 'Tú' : 'MedScan IA'}
             </span>
 
-            {/* Burbuja de texto */}
-            <div className={`p-5 max-w-[85%] rounded-[20px] shadow-sm text-xl font-medium leading-relaxed
-              ${msg.sender === 'user' 
-                ? 'bg-[#1775d3] text-white rounded-tr-sm' 
+            <div className={`max-w-[85%] rounded-[20px] shadow-sm overflow-hidden
+              ${msg.sender === 'user'
+                ? 'bg-[#1775d3] text-white rounded-tr-sm'
                 : 'bg-white text-[#1f2937] border-2 border-slate-100 rounded-tl-sm'}`}
             >
-              {msg.text}
+              {/* Foto dentro de la burbuja, solo en el primer mensaje del bot */}
+              {index === 0 && fotoUrl && (
+                <img
+                  src={fotoUrl}
+                  alt={nombreMedicamento}
+                  className="w-full object-contain bg-slate-50 max-h-[220px]"
+                  onError={(e) => e.currentTarget.style.display = 'none'}
+                />
+              )}
+              <p className="p-5 text-xl font-medium leading-relaxed">
+                {msg.text}
+              </p>
             </div>
+
           </div>
         ))}
         
@@ -131,11 +128,10 @@ const ChatPage = () => {
           </div>
         )}
         
-        {/* Ancla invisible para el auto-scroll */}
         <div ref={messagesEndRef} />
       </main>
 
-      {/* Input de Chat y Aviso Legal */}
+      {/* Footer */}
       <footer className="bg-white p-5 border-t border-slate-200 sticky bottom-0 z-20 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
         <div className="flex gap-3 items-center mb-3">
           <input 
@@ -160,7 +156,6 @@ const ChatPage = () => {
           </button>
         </div>
 
-        {/* Texto Legal */}
         <p className="text-[11px] leading-tight text-center text-slate-400 font-medium px-2">
           * Nota legal: Esta conversación es generada de forma automática por una Inteligencia Artificial (MedScan IA) basada en el prospecto oficial. En caso de duda médica grave, consulte siempre a su médico o farmacéutico.
         </p>
