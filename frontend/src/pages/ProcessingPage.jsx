@@ -63,7 +63,7 @@ export default function ProcessingPage() {
 
       {error && (
         <button 
-          onClick={() => navigate('/')} 
+          onClick={() => navigate('/camera')} 
           className="mt-8 px-6 py-3 bg-primary text-white rounded-full font-bold shadow-lg"
         >
           Volver a escanear

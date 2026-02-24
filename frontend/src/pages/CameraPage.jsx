@@ -93,7 +93,7 @@ export default function CameraPage() {
       <div className="p-6 flex justify-between items-center text-white mt-8 z-20 relative pt-safe">
         <h2 className="text-2xl font-bold tracking-wide drop-shadow-md">Escanear</h2>
         <button 
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/home")}
           className="flex items-center justify-center w-12 h-12 rounded-full bg-black/30 backdrop-blur-md text-white hover:bg-black/50 transition-colors"
         >
           <span className="material-symbols-outlined text-[28px]">close</span>

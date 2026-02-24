@@ -4,7 +4,8 @@ from src.services.scan_service import (
     extraer_codigo_nacional,
     request_cima,
     subir_a_chatpdf,
-    preguntar_a_pdf
+    preguntar_a_pdf,
+    get_info_medicamento
 )
 import os
 
@@ -60,4 +61,26 @@ def hacer_pregunta():
     return jsonify({
         "pregunta": pregunta,
         "respuesta": respuesta
+    }), 200
+
+@scan_bp.route('/medicamento/<string:codigo_nacional>', methods=['GET'])
+def info_medicamento(codigo_nacional):
+    """
+    Dado un código nacional devuelve el nombre y la URL
+    de la foto del medicamento.
+    Ejemplo: GET /medicamento/656843
+    """
+    if not codigo_nacional.isdigit() or len(codigo_nacional) != 6:
+        return jsonify({"error": "Código nacional inválido (debe ser 6 dígitos)"}), 400
+
+    info = get_info_medicamento(codigo_nacional)
+
+    if not info:
+        return jsonify({"error": "Medicamento no encontrado en CIMA"}), 404
+
+    return jsonify({
+        "codigo_nacional": codigo_nacional,
+        "nregistro":       info["nregistro"],
+        "nombre":          info["nombre"],
+        "foto_url":        info["foto_url"],   # null si no hay foto
     }), 200
