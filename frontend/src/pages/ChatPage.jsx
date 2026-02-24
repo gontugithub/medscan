@@ -17,8 +17,47 @@ const ChatPage = () => {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false); // Estado para el micrófono
   
   const messagesEndRef = useRef(null);
+
+  // --- LÓGICA DE RECONOCIMIENTO DE VOZ (Dictado) ---
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+
+  if (recognition) {
+    recognition.lang = 'es-ES';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(transcript);
+      setIsListening(false);
+    };
+
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => setIsListening(false);
+  }
+
+  const toggleListen = () => {
+    if (!recognition) return alert("Tu navegador no soporta dictado por voz.");
+    if (isListening) {
+      recognition.stop();
+    } else {
+      setIsListening(true);
+      recognition.start();
+    }
+  };
+
+  // --- FUNCIÓN DE LECTURA ---
+  const leerEnVozAlta = (texto) => {
+    window.speechSynthesis.cancel();
+    const lectura = new SpeechSynthesisUtterance(texto);
+    lectura.lang = 'es-ES'; 
+    lectura.rate = 1;       
+    window.speechSynthesis.speak(lectura);
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -30,7 +69,6 @@ const ChatPage = () => {
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
-    
     const preguntaUsuario = input.trim();
     
     setMessages(prev => [...prev, { text: preguntaUsuario, sender: 'user' }]);
@@ -40,18 +78,9 @@ const ChatPage = () => {
     try {
       const data = await api.askQuestion(preguntaUsuario);
       const textoRespuesta = data.respuesta || data.content || data.pregunta || "No he recibido una respuesta válida del servidor.";
-
-      setMessages(prev => [...prev, { 
-        text: textoRespuesta, 
-        sender: 'bot' 
-      }]);
-
+      setMessages(prev => [...prev, { text: textoRespuesta, sender: 'bot' }]);
     } catch (error) {
-      console.error("Error consultando al bot:", error);
-      setMessages(prev => [...prev, { 
-        text: 'Lo siento, ha habido un problema de conexión al consultar el prospecto. ¿Puedes intentarlo de nuevo?', 
-        sender: 'bot' 
-      }]);
+      setMessages(prev => [...prev, { text: 'Lo siento, ha habido un problema. ¿Puedes intentarlo de nuevo?', sender: 'bot' }]);
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +89,6 @@ const ChatPage = () => {
   return (
     <div className="bg-[#f6f7f8] text-[#1f2937] h-[100dvh] flex flex-col w-full relative font-display">
       
-      {/* Cabecera */}
       <header className="bg-white px-5 pt-10 pb-4 shadow-sm z-20 sticky top-0 border-b border-slate-100 flex flex-col gap-4">
         <button 
           onClick={() => navigate('/home')} 
@@ -94,9 +122,9 @@ const ChatPage = () => {
               {msg.sender === 'user' ? 'Tú' : 'MedScan IA'}
             </span>
 
-            <div className={`max-w-[85%] rounded-[20px] shadow-sm overflow-hidden
-              ${msg.sender === 'user'
-                ? 'bg-[#1775d3] text-white rounded-tr-sm'
+            <div className={`p-5 max-w-[85%] rounded-[20px] shadow-sm text-xl font-medium leading-relaxed flex flex-col
+              ${msg.sender === 'user' 
+                ? 'bg-[#1775d3] text-white rounded-tr-sm' 
                 : 'bg-white text-[#1f2937] border-2 border-slate-100 rounded-tl-sm'}`}
             >
               {/* Foto dentro de la burbuja, solo en el primer mensaje del bot */}
@@ -109,14 +137,22 @@ const ChatPage = () => {
                 />
               )}
               <p className="p-5 text-xl font-medium leading-relaxed">
-                {msg.text}
+                <span>{msg.text}</span>
+              {msg.sender === 'bot' && (
+                <button 
+                  onClick={() => leerEnVozAlta(msg.text)}
+                  className="mt-3 flex items-center self-start text-[#1775d3] hover:opacity-70 transition-opacity bg-blue-50 px-3 py-1 rounded-full border border-blue-100"
+                >
+                  <span className="material-symbols-outlined text-lg">volume_up</span>
+                  <span className="text-[12px] ml-1 font-bold uppercase tracking-wider">Escuchar</span>
+                </button>
+              )}
               </p>
             </div>
 
           </div>
         ))}
         
-        {/* Indicador de "Escribiendo..." */}
         {isLoading && (
           <div className="flex flex-col items-start">
             <span className="text-sm font-bold text-slate-400 mb-1 ml-2">MedScan IA</span>
@@ -134,19 +170,32 @@ const ChatPage = () => {
       {/* Footer */}
       <footer className="bg-white p-5 border-t border-slate-200 sticky bottom-0 z-20 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
         <div className="flex gap-3 items-center mb-3">
+          
+          {/* BOTÓN DE DICTADO (Micro) */}
+          <button 
+            onClick={toggleListen}
+            className={`w-[64px] h-[64px] rounded-2xl flex items-center justify-center shrink-0 active:scale-95 transition-all shadow-lg 
+              ${isListening ? 'bg-red-500 text-white animate-pulse' : 'bg-orange-500 text-white'}`}
+          >
+            <span className="material-symbols-outlined text-[32px]">
+              {isListening ? 'mic' : 'mic_none'}
+            </span>
+          </button>
+
           <input 
             type="text" 
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
             disabled={isLoading}
-            placeholder={isLoading ? "Buscando en el prospecto..." : "Escribe tu duda aquí..."}
+            placeholder={isListening ? "Escuchando..." : "Escribe tu duda..."}
             className="flex-1 h-[64px] px-6 bg-slate-100 border-2 border-transparent rounded-2xl text-xl outline-none focus:border-[#1775d3] focus:bg-white transition-all placeholder:text-slate-400 disabled:opacity-50" 
           />
+
           <button 
             onClick={sendMessage}
             disabled={isLoading || !input.trim()}
-            className="w-[64px] h-[64px] bg-[#1775d3] disabled:bg-slate-300 text-white rounded-2xl flex items-center justify-center shrink-0 active:scale-95 transition-transform shadow-lg shadow-[#1775d3]/30 disabled:shadow-none"
+            className="w-[64px] h-[64px] bg-[#1775d3] disabled:bg-slate-300 text-white rounded-2xl flex items-center justify-center shrink-0 active:scale-95 transition-transform shadow-lg shadow-[#1775d3]/30"
           >
             {isLoading ? (
               <span className="material-symbols-outlined text-[32px] animate-spin">autorenew</span>
