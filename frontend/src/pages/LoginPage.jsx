@@ -107,7 +107,7 @@ export default function LoginPage() {
         </div>
 
         <div className="text-right">
-          <span className="text-primary font-medium text-lg cursor-pointer hover:underline">¿Olvidaste tu contraseña?</span>
+           <span onClick={() => navigate('/forgot-password')} className="text-primary font-bold cursor-pointer hover:underline">¿Olvidaste tu contraseña?</span>
         </div>
 
         {/* Botón Entrar modificado */}
