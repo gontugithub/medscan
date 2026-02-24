@@ -1,61 +1,28 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const RegisterPage = () => {
+export default function RegisterPage() {
   const navigate = useNavigate();
-
   return (
-    <div className="flex flex-col w-full h-full bg-white dark:bg-slate-900 relative">
-      <header className="px-6 pt-12 pb-2 shrink-0">
-        <h1 className="text-slate-900 dark:text-white tracking-tight text-[32px] font-bold leading-tight text-center">
-          Crea tu cuenta
-        </h1>
-        <p className="text-slate-500 dark:text-slate-400 text-center text-lg mt-2 font-medium">
-          Regístrate para usar MedScan
-        </p>
-      </header>
-
-      <main className="flex-1 w-full px-6 py-4 flex flex-col gap-6 overflow-y-auto no-scrollbar">
-        <div className="flex flex-col gap-2">
-          <label htmlFor="nombre" className="text-slate-900 dark:text-white text-lg font-semibold ml-1">Nombre completo</label>
-          <div className="relative flex items-center">
-            <input id="nombre" type="text" placeholder="Ej. María" className="w-full rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 focus:border-primary h-16 p-4 text-lg text-slate-900 dark:text-white" />
-            <span className="material-symbols-outlined absolute right-4 text-slate-400 pointer-events-none">person</span>
+    <div className="flex-1 flex flex-col p-6 overflow-y-auto no-scrollbar pb-12">
+      <button onClick={() => navigate(-1)} className="w-12 h-12 flex items-center justify-center bg-slate-100 rounded-full mb-6 active:scale-95">
+        <span className="material-symbols-outlined text-3xl">arrow_back</span>
+      </button>
+      <h2 className="text-3xl font-bold mb-6 text-text-main">Crea tu cuenta</h2>
+      <div className="space-y-4">
+        {['Nombre completo', 'Apellidos', 'Email', 'Teléfono', 'Contraseña', 'Confirmar contraseña'].map((label, i) => (
+          <div key={i}>
+            <label className="block text-lg font-medium text-slate-700 mb-2">{label}</label>
+            <input type={label.includes('Contraseña') ? 'password' : 'text'} className="w-full h-16 px-4 rounded-2xl border-2 border-slate-200 focus:border-primary text-lg bg-white outline-none" />
           </div>
+        ))}
+        <div>
+          <label className="block text-lg font-medium text-slate-700 mb-2">Fecha de nacimiento</label>
+          <input type="date" className="w-full h-16 px-4 rounded-2xl border-2 border-slate-200 focus:border-primary text-lg bg-white outline-none" />
         </div>
-
-        <div className="flex flex-col gap-2">
-          <label htmlFor="email" className="text-slate-900 dark:text-white text-lg font-semibold ml-1">Correo electrónico</label>
-          <div className="relative flex items-center">
-            <input id="email" type="email" placeholder="ejemplo@correo.com" className="w-full rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 focus:border-primary h-16 p-4 text-lg text-slate-900 dark:text-white" />
-            <span className="material-symbols-outlined absolute right-4 text-slate-400 pointer-events-none">mail</span>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <label htmlFor="password" className="text-slate-900 dark:text-white text-lg font-semibold ml-1">Contraseña</label>
-          <div className="relative flex items-center">
-            <input id="password" type="password" placeholder="Mínimo 8 caracteres" className="w-full rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 focus:border-primary h-16 p-4 text-lg text-slate-900 dark:text-white" />
-            <span className="material-symbols-outlined absolute right-4 text-slate-400 cursor-pointer">visibility</span>
-          </div>
-        </div>
-
-        <div className="pt-4 pb-2">
-          <button className="w-full bg-primary hover:bg-blue-700 text-white rounded-xl h-16 text-xl font-bold tracking-wide shadow-md active:scale-[0.98] flex items-center justify-center gap-2">
-            Registrarse
-            <span className="material-symbols-outlined text-2xl">arrow_forward</span>
-          </button>
-        </div>
-
-        <div className="pb-8 pt-2 text-center">
-          <p className="text-slate-500 dark:text-slate-400 text-lg">
-            ¿Ya tienes cuenta? 
-            <button onClick={() => navigate('/login')} className="text-primary font-bold hover:underline ml-1">Inicia sesión</button>
-          </p>
-        </div>
-      </main>
+        <button onClick={() => navigate('/role')} className="w-full h-16 bg-primary text-white text-xl font-bold rounded-2xl shadow-lg mt-8 active:scale-95 transition-transform">
+          Registrarse
+        </button>
+      </div>
     </div>
   );
-};
-
-export default RegisterPage;
+}
