@@ -19,7 +19,7 @@ export default function LoginPage() {
       navigate('/home');
     } else if (loginValue.includes('medico')) {
       // Redirigir a mis pacientes
-      navigate('/dashboard');
+      navigate('/add-patient');
     } else {
       // Ruta por defecto o manejo de error si no contiene ninguna palabra clave
       console.log("Usuario no identificado como médico o paciente");
