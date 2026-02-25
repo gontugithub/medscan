@@ -1,3 +1,4 @@
+@"
 <div align="center">
   <img src="frontend/public/logo-weagain-sin-fondo.svg" alt="WeAgain Logo" width="200"/>
   <h1>🏥 MedScan</h1>
@@ -16,7 +17,7 @@
 
 ## 📖 Sobre MedScan
 
-**MedScan** es una solución integral diseñada para mejorar la adherencia terapéutica de las personas mayores mediante tecnología accesible.  
+**MedScan** es una solución integral diseñada para mejorar la adherencia terapéutica de las personas mayores mediante tecnología accesible.
 
 Con un simple escaneo de la caja del medicamento, el sistema identifica automáticamente el **Código Nacional de Medicamento (CNM)**, consulta la base oficial **CIMA de la AEMPS**, descarga el prospecto y activa un asistente de IA que responde **únicamente** sobre ese documento en lenguaje claro, empático y adaptado a usuarios seniors.
 
@@ -42,7 +43,7 @@ MedScan nace para proteger a la población más vulnerable, reduciendo los error
 
 ### 📱 Frontend (React + Vite)
 - Sistema multi-rol permanente (Paciente / Cuidador)
-- Interfaz senior-friendly: botones grandes, alto contraste, textos legibles
+- Interfaz senior-friendly: botones grandes, alto contraste y textos legibles
 - Accesibilidad completa: Speech-to-Text y Text-to-Speech nativos
 - Flujo paciente: botón gigante de escaneo → cámara → chat IA → alarmas inteligentes
 - Dashboard cuidador: lista de pacientes con semáforo de cumplimiento y gestión completa de tratamientos
@@ -160,12 +161,21 @@ Alarma fullscreen con foto del medicamento
 
 👥 Equipo
 WeAgain
-Desarrollado con ❤️ en 48 horas para la hackathon.
+Desarrollado por:
+
+Alejandro
+Hugo
+Gonzalo
+Carlos
+Manuel
+
+En 48 horas para la hackathon.
 
 📄 Licencia
 MIT License – Uso libre para fines educativos y comerciales.
 
 
-  Construido con pasión por WeAgain para un futuro más saludable y accesible.
+  Desarrollado por WeAgain.
 
+"@ | Out-File -FilePath README.md -Encoding utf8
 ```
