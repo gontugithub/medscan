@@ -26,6 +26,18 @@ Con un simple escaneo de la caja del medicamento, el sistema identifica automát
 
 ---
 
+## USUARIOS TEST
+
+-Medicos:
+-user: medico
+-contraseña: cualquiera adecuada con los requisitos de contraseña
+
+-Pacientes:
+-user: paciente
+-contraseña: cualquiera adecuada con los requisitos de contraseña
+
+---
+
 ## 🎯 Propósito y Público Objetivo
 
 MedScan nace para proteger a la población más vulnerable, reduciendo los errores de medicación que afectan a más del 50 % de las personas mayores de 65 años en España.
