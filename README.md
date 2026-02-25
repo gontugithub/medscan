@@ -1,5 +1,9 @@
+@"
 <div align="center">
-  <img src="frontend/public/logo-weagain-sin-fondo.svg" alt="WeAgain Logo" width="200"/>
+  <h1 style="font-size: 4.5rem; font-weight: 800; margin: 0; line-height: 1;">
+    <span style="color: #FF6B00;">We</span><span style="color: #007BFF;">Again</span>
+    <span style="font-size: 1.8rem; color: #555; font-weight: 400; vertical-align: middle; margin-left: 12px;">IA</span>
+  </h1>
   <h1>🏥 MedScan</h1>
   <p><strong>Escanea. Entiende. Nunca olvides tu medicación.</strong></p>
   <p>Plataforma sociosanitaria accesible que elimina la brecha digital en el manejo de medicamentos para personas mayores y sus cuidadores.</p>
@@ -16,7 +20,7 @@
 
 ## 📖 Sobre MedScan
 
-**MedScan** es una solución integral diseñada para mejorar la adherencia terapéutica de las personas mayores mediante tecnología accesible.  
+**MedScan** es una solución integral diseñada para mejorar la adherencia terapéutica de las personas mayores mediante tecnología accesible.
 
 Con un simple escaneo de la caja del medicamento, el sistema identifica automáticamente el **Código Nacional de Medicamento (CNM)**, consulta la base oficial **CIMA de la AEMPS**, descarga el prospecto y activa un asistente de IA que responde **únicamente** sobre ese documento en lenguaje claro, empático y adaptado a usuarios seniors.
 
@@ -42,7 +46,7 @@ MedScan nace para proteger a la población más vulnerable, reduciendo los error
 
 ### 📱 Frontend (React + Vite)
 - Sistema multi-rol permanente (Paciente / Cuidador)
-- Interfaz senior-friendly: botones grandes, alto contraste, textos legibles
+- Interfaz senior-friendly: botones grandes, alto contraste y textos legibles
 - Accesibilidad completa: Speech-to-Text y Text-to-Speech nativos
 - Flujo paciente: botón gigante de escaneo → cámara → chat IA → alarmas inteligentes
 - Dashboard cuidador: lista de pacientes con semáforo de cumplimiento y gestión completa de tratamientos
@@ -160,12 +164,20 @@ Alarma fullscreen con foto del medicamento
 
 👥 Equipo
 WeAgain
-Desarrollado con ❤️ en 48 horas para la hackathon.
+Desarrollado por:
+
+Alejandro
+Hugo
+Gonzalo
+Carlos
+Manuel
+
 
 📄 Licencia
 MIT License – Uso libre para fines educativos y comerciales.
 
 
-  Construido con pasión por WeAgain para un futuro más saludable y accesible.
+  Desarrollado por WeAgain.
 
+"@ | Out-File -FilePath README.md -Encoding utf8
 ```
