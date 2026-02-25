@@ -1,101 +1,91 @@
-﻿<div align="center">
-  <img src="frontend/public/logo-weagain-sin-fondo.svg" alt="WeAgain Logo" width="180"/>
+<div align="center">
+  <img src="frontend/public/logo-weagain-sin-fondo.svg" alt="WeAgain Logo" width="200"/>
   <h1>🏥 MedScan</h1>
-  <p><strong>Escanea, entiende y nunca olvides tu medicación.</strong></p>
-  <p>Una solución accesible que rompe la brecha digital en la salud para personas mayores y sus cuidadores.</p>
+  <p><strong>Escanea. Entiende. Nunca olvides tu medicación.</strong></p>
+  <p>Plataforma sociosanitaria accesible que elimina la brecha digital en el manejo de medicamentos para personas mayores y sus cuidadores.</p>
 
-  [<image-card alt="React" src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" ></image-card>](https://reactjs.org/)
-  [<image-card alt="Vite" src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" ></image-card>](https://vitejs.dev/)
-  [<image-card alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" ></image-card>](https://tailwindcss.com/)
-  [<image-card alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" ></image-card>](https://www.typescriptlang.org/)
-  [<image-card alt="Flask" src="https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white" ></image-card>](https://flask.palletsprojects.com/)
-  [<image-card alt="Python" src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" ></image-card>](https://www.python.org/)
-  [<image-card alt="Railway" src="https://img.shields.io/badge/Railway-0B0C0D?style=for-the-badge&logo=railway&logoColor=white" ></image-card>](https://railway.app)
+  [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+  [![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+  [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 </div>
 
 ---
 
-## 📖 Sobre el Proyecto
+## 📖 Sobre MedScan
 
-**MedScan** es una plataforma sociosanitaria integral diseñada para ayudar a personas mayores y sus cuidadores a gestionar la medicación de forma segura, sencilla e independiente.
+**MedScan** es una solución integral diseñada para mejorar la adherencia terapéutica de las personas mayores mediante tecnología accesible.  
 
-Gracias a **Visión Artificial (OCR)** e **Inteligencia Artificial Generativa**, el usuario solo tiene que **escanear la caja de cualquier medicamento** con la cámara del móvil. El sistema identifica automáticamente el **Código Nacional de Medicamento (CNM)**, descarga el prospecto oficial de la **AEMPS (base CIMA)** y abre un chat inteligente que responde **únicamente** sobre ese documento, con lenguaje claro, empático y adaptado a personas mayores.
+Con un simple escaneo de la caja del medicamento, el sistema identifica automáticamente el **Código Nacional de Medicamento (CNM)**, consulta la base oficial **CIMA de la AEMPS**, descarga el prospecto y activa un asistente de IA que responde **únicamente** sobre ese documento en lenguaje claro, empático y adaptado a usuarios seniors.
 
 ---
 
 ## 🎯 Propósito y Público Objetivo
 
-MedScan nace para proteger a la población vulnerable y reducir los errores de medicación, que afectan a más del 50 % de las personas mayores de 65 años.
+MedScan nace para proteger a la población más vulnerable, reduciendo los errores de medicación que afectan a más del 50 % de las personas mayores de 65 años en España.
 
-**Público principal:**
-- **Pacientes mayores** (interfaz ultra-sencilla con botones grandes y accesibilidad total)
-- **Cuidadores familiares**
-- **Profesionales** (residencias de mayores, enfermeros y médicos)
+**Público principal**
+- Pacientes mayores (interfaz ultra-sencilla y accesible)
+- Cuidadores familiares
+- Profesionales sanitarios y residencias de mayores
 
-**Modelo de negocio futuro (B2B):**
-- Residencias de mayores (gestión centralizada de pastilleros)
-- Farmacias y hospitales (valor añadido para pacientes)
-- Cuidadores profesionales (dashboard de control remoto)
+**Modelo de escalabilidad B2B**
+- Residencias y centros geriátricos
+- Farmacias y hospitales
+- Plataformas de telemedicina
 
 ---
 
 ## ✨ Características Principales
 
 ### 📱 Frontend (React + Vite)
-- **Multi-rol permanente**: Paciente o Cuidador (se elige una sola vez)
-- **Interfaz senior-friendly**: botones gigantes, alto contraste, textos grandes
-- **Accesibilidad total**: Speech-to-Text y Text-to-Speech integrados
-- **Flujo principal paciente**:
-  - Pantalla principal con botón gigante **“Escanear medicamento”**
-  - Cámara con overlay de escaneo
-  - Chat IA con foto del medicamento + resumen del prospecto
-  - Lista de medicamentos + alarmas automáticas
-- **Dashboard cuidador**:
-  - Lista de pacientes con estado de tomas (semáforo verde/rojo)
-  - Añadir paciente por ID
-  - Gestión completa de medicamentos (nombre, CNM, horarios, frecuencia, foto)
+- Sistema multi-rol permanente (Paciente / Cuidador)
+- Interfaz senior-friendly: botones grandes, alto contraste, textos legibles
+- Accesibilidad completa: Speech-to-Text y Text-to-Speech nativos
+- Flujo paciente: botón gigante de escaneo → cámara → chat IA → alarmas inteligentes
+- Dashboard cuidador: lista de pacientes con semáforo de cumplimiento y gestión completa de tratamientos
 
 ### ⚙️ Backend (Flask)
-- OCR integrado con **OCR.space**
-- Consulta oficial en tiempo real a **API CIMA (AEMPS)**
-- Procesamiento de PDF con **ChatPDF**
-- Notificaciones push al cuidador cuando el paciente marca “Ya me la he tomado” o pospone
+- OCR integrado (OCR.space)
+- Consulta oficial en tiempo real a API CIMA (AEMPS)
+- Procesamiento inteligente de PDF con ChatPDF
+- Notificaciones automáticas al cuidador
 - API REST limpia y documentada
 
 ---
 
-## 🚀 Tecnologías y Herramientas
+## 🚀 Stack Tecnológico
 
-| Capa          | Tecnología                          | Versión / Uso                              |
-|---------------|-------------------------------------|--------------------------------------------|
-| Frontend      | React 18 + TypeScript + Vite        | Máximo rendimiento y HMR                   |
-| Estilos       | Tailwind CSS + shadcn/ui            | Diseño moderno y accesible                 |
-| Router        | React Router DOM                    | Navegación fluida                          |
-| Backend       | Python + Flask                      | API ligera y escalable                     |
-| Deploy        | Railway (Backend) + Vercel/Netlify  | Frontend (PWA)                             |
-| IA / OCR      | OCR.space + ChatPDF + Gemini        | Procesamiento inteligente                  |
-| Base datos    | SQLite (demo) / PostgreSQL (prod)   | Almacenamiento de usuarios y relaciones    |
+| Capa          | Tecnología                     | Propósito                              |
+|---------------|--------------------------------|----------------------------------------|
+| Frontend      | React 18 + TypeScript + Vite   | Rendimiento y experiencia nativa       |
+| Estilos       | Tailwind CSS + shadcn/ui       | Diseño moderno y accesible             |
+| Router        | React Router DOM               | Navegación fluida                      |
+| Backend       | Python + Flask                 | API ligera y escalable                 |
+| Despliegue    | Railway (Backend) + Vercel     | Frontend como PWA                      |
+| IA / OCR      | OCR.space + ChatPDF + Gemini   | Procesamiento inteligente              |
+| Base de datos | SQLite (demo) / PostgreSQL     | Usuarios y relaciones                  |
 
 ---
 
-## 🔄 Arquitectura y Flujo de Datos
+## 🔄 Arquitectura
 
-`mermaid
+```mermaid
 graph TD
-    A[Frontend React - Paciente/Cuidador] -->|Foto o CNM| B[Flask Backend /upload o /upload-by-cn]
-    B --> C[OCR.space API]
+    A[Frontend React] -->|Foto o CNM| B[Flask Backend]
+    B --> C[OCR.space]
     C --> D[API CIMA AEMPS]
-    D --> E[Descarga Prospecto PDF]
-    E --> F[ChatPDF API - Vector Store]
-    A -->|Pregunta por voz o texto| G[Flask /pregunta]
+    D --> E[Prospecto PDF]
+    E --> F[ChatPDF Vector Store]
+    A -->|Pregunta voz/texto| G[Backend /pregunta]
     G --> F
-    F -->|Respuesta simplificada| A
-    A -->|Alarma "Ya tomada"| H[Notificación push al Cuidador]
+    F --> A[Respuesta simplificada]
+    A -->|Toma registrada| H[Notificación al Cuidador]
 
-🔌 API Reference (Backend)
-La API está desplegada en producción: https://medscan-production.up.railway.app
-
-
+🔌 API (Backend en producción)
+URL base: https://medscan-production.up.railway.app
 
 
 
@@ -129,42 +119,30 @@ La API está desplegada en producción: https://medscan-production.up.railway.ap
 
 
 
-MétodoEndpointDescripciónPOST/uploadSube foto → OCR → CIMA → prepara chatPOST/upload-by-cn/:cnUsa CNM directamente (sin foto)GET/preguntaEnvía pregunta sobre el prospecto actualGET/medicamento/:cnDevuelve nombre, foto oficial y datos básicosPOST/toma-registradaRegistra toma y notifica al cuidador
-Ejemplo de respuesta /pregunta:
-JSON{
-  "pregunta": "¿Debo tomarlo con comida?",
-  "respuesta": "Sí, es recomendable tomar el ibuprofeno junto con las comidas o con un vaso de leche para proteger el estómago.",
-  "fuente": "Prospecto oficial AEMPS"
-}
 
-🛠️ Instalación y Despliegue Local
-1. Clonar el repositorio
+
+MétodoEndpointDescripciónPOST/uploadFoto → OCR → CIMA → prepara chatPOST/upload-by-cn/:cnCNM directo (sin foto)GET/preguntaConsulta sobre el prospectoGET/medicamento/:cnDatos + foto oficialPOST/toma-registradaRegistra toma y notifica cuidador
+
+🛠️ Instalación Local
 Bashgit clone https://github.com/gontugithub/medscan.git
 cd medscan
-2. Backend
+Backend
 Bashcd backend
 python -m venv venv
-.\venv\Scripts\activate          # Windows
+.\venv\Scripts\activate
 pip install -r requirements.txt
-
-# Crear .env
 copy .env.example .env
-# Edita .env con tus claves: OCR_API_KEY, CHATPDF_API_KEY, SECRET_KEY, etc.
-
 python app.py
-# → Servidor en http://localhost:5000
-3. Frontend
+Frontend
 Bashcd ../frontend
 npm install
 npm run dev
-# → App en http://localhost:5173
 
-📸 Capturas de Pantalla
-(Se añadirán tras generar con Stitch)
+📸 Capturas (próximamente)
 
-Landing + Login/Registro
+Landing y autenticación
 Selección de rol
-Home paciente con botón gigante de escaneo
+Home paciente con botón principal de escaneo
 Cámara + Chat IA
 Dashboard cuidador
 Alarma fullscreen con foto del medicamento
@@ -172,22 +150,22 @@ Alarma fullscreen con foto del medicamento
 
 🔮 Roadmap
 
- MVP con escaneo + chat + alarmas (Hackathon)
- Notificaciones push reales (Firebase)
+ MVP completo – Hackathon febrero 2026
+ Notificaciones push (Firebase)
  Integración IoT con pastilleros automáticos
- Historial clínico y detección de interacciones
- Versión para residencias (multi-paciente avanzado)
+ Detección automática de interacciones medicamentosas
+ Versión multi-paciente para residencias
  Soporte multilingüe automático
 
 
 👥 Equipo
-WeAgain – Equipo de desarrollo para hackathon
-Desarrollado con ❤️ y mucho café en 48 horas.
+WeAgain
+Desarrollado con ❤️ en 48 horas para la hackathon.
 
 📄 Licencia
-Este proyecto está bajo la licencia MIT. Puedes usarlo libremente para fines educativos y comerciales.
+MIT License – Uso libre para fines educativos y comerciales.
 
 
-  Construido con ❤️ por WeAgain para un futuro más saludable y accesible.
-  ¡Gracias por revisar MedScan!
+  Construido con pasión por WeAgain para un futuro más saludable y accesible.
 
+```
