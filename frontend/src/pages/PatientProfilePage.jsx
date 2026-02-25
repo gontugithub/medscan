@@ -1,314 +1,231 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-const INITIAL_MEDS = [
-  { id: 1, nombre: 'Paracetamol 1g', dosis: '1 pastilla cada 8h', estado: 'tomado', hora: '09:15', icono: 'medication', color: 'blue' },
-  { id: 2, nombre: 'Omeprazol 20mg', dosis: '1 cápsula en ayunas', estado: 'pendiente', hora: null, icono: 'pill', color: 'purple' },
-  { id: 3, nombre: 'Sintrom 4mg', dosis: 'Según pauta médica', estado: 'manana', hora: null, icono: 'water_drop', color: 'orange' },
-];
-
-const COLOR_MAP = {
-  blue:   { bg: 'bg-blue-50',   text: 'text-[#1775d3]' },
-  purple: { bg: 'bg-purple-50', text: 'text-purple-600' },
-  orange: { bg: 'bg-orange-50', text: 'text-orange-600' },
-  green:  { bg: 'bg-green-50',  text: 'text-green-600' },
-  rose:   { bg: 'bg-rose-50',   text: 'text-rose-600' },
-};
-const ICON_COLORS = ['blue', 'purple', 'orange', 'green', 'rose'];
-
-const HORAS_RAPIDAS = ['06:00', '08:00', '09:00', '10:00', '12:00', '14:00', '16:00', '20:00', '22:00'];
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import MedScanLogo from '../components/MedScan_Logo.jsx';
+import { api } from '../services/api';
 
 export default function PatientProfilePage() {
   const navigate = useNavigate();
-  const [meds, setMeds] = useState(INITIAL_MEDS);
-  const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ nombre: '', dosis: '' });
-  // Estado inicial del nuevo med: 'pendiente' | 'tomado' | 'manana'
-  const [nuevoEstado, setNuevoEstado] = useState('pendiente');
-  const [horaCustom, setHoraCustom] = useState('');
-  const [horaSeleccionada, setHoraSeleccionada] = useState('');
-  const [error, setError] = useState('');
+  const location = useLocation();
+  const [paciente, setPaciente] = useState(location.state?.paciente || null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [searchMed, setSearchMed] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  
+  const [newMed, setNewMed] = useState({ 
+    cn: '', nombre: '', dosis: '1 comp.', horas: ['08:00'], intervalo: 8, foto_url: '' 
+  });
 
-  const resetModal = () => {
-    setForm({ nombre: '', dosis: '' });
-    setNuevoEstado('pendiente');
-    setHoraCustom('');
-    setHoraSeleccionada('');
-    setError('');
-    setShowModal(false);
-  };
+  const editFotoRef = useRef();
 
-  const handleAdd = () => {
-    if (!form.nombre.trim() || !form.dosis.trim()) {
-      setError('Rellena nombre y dosis.');
-      return;
+  useEffect(() => {
+    if (!paciente) {
+      const saved = JSON.parse(localStorage.getItem('medscan_patients') || '[]');
+      if (saved.length > 0) setPaciente(saved[0]);
+      else navigate('/add-patient'); 
     }
-    const color = ICON_COLORS[meds.length % ICON_COLORS.length];
-    // Determinar hora final si está tomado
-    let hora = null;
-    if (nuevoEstado === 'tomado') {
-      if (horaCustom) {
-        hora = horaCustom;
-      } else if (horaSeleccionada) {
-        hora = horaSeleccionada;
-      } else {
-        // hora actual
-        const now = new Date();
-        hora = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-      }
+  }, [paciente, navigate]);
+
+  const sugerirHoras = (primeraHora, intervalo) => {
+    const horasArr = [];
+    let [h, m] = primeraHora.split(':').map(Number);
+    for (let i = 0; i < Math.floor(24 / intervalo); i++) {
+      const hCalc = (h + (i * intervalo)) % 24;
+      horasArr.push(`${hCalc.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
     }
-    setMeds(prev => [
-      ...prev,
-      {
-        id: Date.now(),
-        nombre: form.nombre.trim(),
-        dosis: form.dosis.trim(),
-        estado: nuevoEstado,
-        hora,
-        icono: 'medication',
-        color,
-      },
-    ]);
-    resetModal();
+    return horasArr.sort();
   };
 
-  const handleRemove = (id) => setMeds(prev => prev.filter(m => m.id !== id));
-
-  const toggleTomado = (id) => {
-    setMeds(prev => prev.map(m => {
-      if (m.id !== id) return m;
-      const now = new Date();
-      const hora = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-      return { ...m, estado: m.estado === 'tomado' ? 'pendiente' : 'tomado', hora: m.estado === 'tomado' ? null : hora };
-    }));
+  const handleCnSearch = async (val) => {
+    setNewMed({ ...newMed, cn: val });
+    if (val.length === 6) {
+      try {
+        const data = await api.getMedicamentoInfo(val);
+        if (data) setNewMed(prev => ({ 
+            ...prev, 
+            nombre: data.nombre || data.nombre_medicamento, 
+            foto_url: data.foto_url 
+        }));
+      } catch (e) { console.error("Error API"); }
+    }
   };
+
+  const saveToGlobal = (p) => {
+    const all = JSON.parse(localStorage.getItem('medscan_patients') || '[]');
+    localStorage.setItem('medscan_patients', JSON.stringify(all.map(x => x.id === p.id ? p : x)));
+  };
+
+  const deleteThisPatient = () => {
+    const all = JSON.parse(localStorage.getItem('medscan_patients') || '[]');
+    const updated = all.filter(p => p.id !== paciente.id);
+    localStorage.setItem('medscan_patients', JSON.stringify(updated));
+    navigate('/add-patient'); 
+  };
+
+  if (!paciente) return null;
+
+  const todasLasTomas = (paciente.medicamentos || [])
+    .flatMap((m, mIdx) => (m.horas || []).map((h, hIdx) => ({...m, h, mIdx, hIdx})))
+    .sort((a,b) => a.h.localeCompare(b.h))
+    .filter(t => t.nombre?.toLowerCase().includes(searchMed.toLowerCase()));
 
   return (
-    <div className="bg-[#f6f7f8] text-[#1f2937] min-h-[100dvh] flex flex-col w-full relative">
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
-        .filled { font-variation-settings: 'FILL' 1; }
-        * { font-family: 'DM Sans', sans-serif; }
-        .slide-up { animation: slideUp 0.25s cubic-bezier(.4,0,.2,1) both; }
-        @keyframes slideUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
-        input:focus { outline: none; }
-        .chip { display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;border:2px solid;transition:all 0.15s;text-transform:uppercase;letter-spacing:0.03em; }
-        .chip-tomado-active { background:#dcfce7;color:#16a34a;border-color:#16a34a; }
-        .chip-pendiente-active { background:#fef3c7;color:#d97706;border-color:#d97706; }
-        .chip-manana-active { background:#f1f5f9;color:#64748b;border-color:#64748b; }
-        .chip-inactive { background:white;color:#94a3b8;border-color:#e2e8f0; }
-        .hora-chip { display:inline-flex;padding:5px 11px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;border:2px solid #e2e8f0;transition:all 0.15s; }
-        .hora-chip-active { border-color:#1775d3;background:#eff6ff;color:#1775d3; }
-        .hora-chip-inactive { background:white;color:#64748b; }
-      `}</style>
-
-      {/* Header */}
-      <header className="bg-white px-5 py-4 flex items-center border-b border-slate-100 sticky top-0 z-20 pt-12">
-        <button onClick={() => navigate(-1)}
-          className="w-10 h-10 flex items-center justify-center bg-slate-50 hover:bg-slate-100 rounded-full active:scale-95 transition-all">
-          <span className="material-symbols-outlined text-[#1f2937]">arrow_back</span>
+    <div className="bg-[#f8fafc] min-h-screen pb-40 font-sans">
+      <header className="bg-white/90 backdrop-blur-md px-6 pt-12 pb-4 flex items-center justify-between sticky top-0 z-50 border-b">
+        <button onClick={() => navigate(-1)} className="material-symbols-outlined text-slate-400">arrow_back_ios</button>
+        <span className="font-bold uppercase text-[11px] tracking-widest text-slate-400">Expediente</span>
+        <button 
+          onClick={() => { if(isEditing) saveToGlobal(paciente); setIsEditing(!isEditing); }} 
+          className={`px-5 py-2 rounded-2xl text-[10px] font-black tracking-widest transition-all ${isEditing ? 'bg-green-500 text-white shadow-lg' : 'bg-blue-50 text-blue-600'}`}
+        >
+          {isEditing ? 'GUARDAR' : 'EDITAR'}
         </button>
-        <div className="flex-1 flex items-center justify-center gap-2 pr-10">
-          <span className="w-7 h-7 rounded-lg bg-[#1775d3] flex items-center justify-center">
-            <span className="material-symbols-outlined text-white text-[16px]">qr_code_scanner</span>
-          </span>
-          <span className="text-lg font-black text-[#1775d3] tracking-tight">MedScan <span className="text-[#1f2937]">IA</span></span>
-        </div>
       </header>
 
-      {/* Main */}
-      <main className="flex-1 overflow-y-auto pb-32">
-
-        {/* Profile card */}
-        <div className="flex flex-col items-center pt-8 pb-6 bg-white shadow-sm rounded-b-3xl mb-6">
+      <main className="p-6">
+        {/* INFO DEL PACIENTE */}
+        <div className="flex flex-col items-center gap-4 mb-8">
           <div className="relative">
-            <img src="https://i.pravatar.cc/150?img=32" alt="Paca López" className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md mb-3" />
-            <div className="absolute bottom-1 right-1 w-5 h-5 bg-green-500 border-4 border-white rounded-full" />
+            <div className={`w-24 h-24 rounded-[2.5rem] overflow-hidden bg-white shadow-xl relative border-4 border-white`}>
+              <img src={paciente.foto || "https://via.placeholder.com/150"} className="w-full h-full object-cover" />
+              {/* EDITAR FOTO: Solo visible en modo edición */}
+              {isEditing && (
+                <div 
+                  onClick={() => editFotoRef.current.click()} 
+                  className="absolute inset-0 bg-black/40 flex items-center justify-center text-white cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-3xl font-bold">photo_camera</span>
+                </div>
+              )}
+            </div>
+            <input 
+              type="file" 
+              ref={editFotoRef} 
+              hidden 
+              onChange={(e) => {
+                 const reader = new FileReader();
+                 reader.onload = (ev) => setPaciente({...paciente, foto: ev.target.result});
+                 if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+              }} 
+            />
           </div>
-          <h2 className="text-2xl font-bold text-[#1f2937]">Paca López</h2>
-          <button className="text-[#1775d3] text-sm font-medium mt-1 flex items-center gap-1 active:opacity-70">
-            Ver historial médico <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          </button>
+          
+          <div className="text-center w-full max-w-xs">
+            {isEditing ? (
+              <div className="space-y-3 animate-in fade-in">
+                <input 
+                  value={paciente.nombre} 
+                  onChange={e => setPaciente({...paciente, nombre: e.target.value})} 
+                  className="w-full text-center font-bold text-xl border-b-2 border-blue-100 outline-none bg-transparent" 
+                  placeholder="Nombre" 
+                />
+                <input 
+                  value={paciente.apellidos} 
+                  onChange={e => setPaciente({...paciente, apellidos: e.target.value})} 
+                  className="w-full text-center font-bold text-sm text-slate-400 border-b outline-none bg-transparent" 
+                  placeholder="Apellidos" 
+                />
+                {/* EDITAR CUMPLEAÑOS */}
+                <div className="bg-slate-50 p-2 rounded-xl mt-2">
+                  <p className="text-[9px] font-black text-slate-400 uppercase mb-1 text-center tracking-widest">Fecha de Nacimiento</p>
+                  <input 
+                    type="date" 
+                    value={paciente.fechaNacimiento} 
+                    onChange={e => setPaciente({...paciente, fechaNacimiento: e.target.value})} 
+                    className="w-full text-center text-sm font-bold text-blue-600 bg-transparent outline-none" 
+                  />
+                </div>
+              </div>
+            ) : (
+              <>
+                <h2 className="text-2xl font-black text-slate-800 tracking-tight">{paciente.nombre} {paciente.apellidos}</h2>
+                <p className="text-[10px] font-black text-slate-300 tracking-[0.2em] mt-1">{paciente.id}</p>
+              </>
+            )}
+          </div>
         </div>
 
-        {/* Medications */}
-        <div className="px-5 space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xl font-bold text-[#1f2937]">Medicamentos</h3>
-            <span className="text-xs text-slate-400 font-medium">{meds.length} registrados</span>
+        {/* BUSCADOR (No se mueve) */}
+        {!isEditing && (
+          <div className="mb-8">
+            <input value={searchMed} onChange={(e) => setSearchMed(e.target.value)} placeholder="¿Qué pastilla buscas?" className="w-full h-14 pl-6 pr-6 bg-white border border-slate-100 rounded-[1.5rem] shadow-md outline-none text-base font-medium" />
           </div>
+        )}
 
-          {meds.length === 0 && (
-            <div className="text-center py-10 text-slate-400 text-sm">Sin medicamentos registrados</div>
-          )}
+        {/* NUEVA PAUTA (No se mueve) */}
+        {isEditing && (
+          <div className="bg-slate-900 rounded-[2.5rem] p-6 shadow-2xl space-y-4 mb-8">
+            <p className="text-blue-400 text-[10px] font-black uppercase tracking-widest">Nueva Pauta</p>
+            <input value={newMed.cn} onChange={e => handleCnSearch(e.target.value)} placeholder="C.N. (6 dígitos)" className="w-full h-12 bg-white/10 rounded-xl px-4 text-white font-bold outline-none" />
+            <div className="grid grid-cols-4 gap-2">
+              {[4, 6, 8, 12].map(n => (
+                <button key={n} type="button" onClick={() => setNewMed({...newMed, intervalo: n, horas: sugerirHoras(newMed.horas[0], n)})} className={`h-11 rounded-xl text-[10px] font-black ${newMed.intervalo === n ? 'bg-blue-600 text-white shadow-lg' : 'bg-white/5 text-slate-400'}`}>{n}H</button>
+              ))}
+            </div>
+            <div className="flex items-center justify-between bg-white/5 p-4 rounded-2xl">
+              <span className="text-[10px] text-slate-400 font-black uppercase">1ª Toma</span>
+              <input type="time" value={newMed.horas[0]} onChange={(e) => setNewMed({...newMed, horas: sugerirHoras(e.target.value, newMed.intervalo)})} className="bg-white rounded-lg px-3 py-1 font-bold outline-none" />
+            </div>
+            <button type="button" onClick={() => {
+              if(!newMed.nombre) return alert("Medicamento no encontrado");
+              setPaciente({...paciente, medicamentos: [...(paciente.medicamentos || []), {...newMed, tomasRealizadas: []}]});
+              setNewMed({ cn: '', nombre: '', dosis: '1 comp.', horas: ['08:00'], intervalo: 8, foto_url: '' });
+            }} className="w-full h-14 bg-blue-600 text-white rounded-2xl font-black shadow-lg">AÑADIR AL TRATAMIENTO</button>
+          </div>
+        )}
 
-          {meds.map(m => {
-            const c = COLOR_MAP[m.color] || COLOR_MAP.blue;
+        {/* LISTADO TOMAS (No se mueve) */}
+        <div className="space-y-3 mb-12">
+          {todasLasTomas.map((toma, i) => {
+            const tomada = paciente.medicamentos[toma.mIdx]?.tomasRealizadas?.includes(toma.h);
             return (
-              <article key={m.id}
-                className="bg-white rounded-xl p-4 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100 flex items-center gap-4 slide-up">
-                <div className={`w-12 h-12 rounded-full ${c.bg} flex items-center justify-center ${c.text} shrink-0`}>
-                  <span className="material-symbols-outlined text-[24px]">{m.icono}</span>
+              <div key={i} className={`bg-white rounded-3xl p-4 flex items-center gap-4 border-2 transition-all ${tomada ? 'border-green-100 bg-green-50/10' : 'border-slate-50 shadow-sm'}`}>
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center overflow-hidden ${tomada ? 'bg-green-500 text-white' : 'bg-slate-50 text-slate-200'}`}>
+                  {toma.foto_url ? <img src={toma.foto_url} className="w-full h-full object-contain p-1" /> : <span className="material-symbols-outlined">{tomada ? 'check' : 'medication'}</span>}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-base font-bold text-[#1f2937] truncate">{m.nombre}</h4>
-                  <p className="text-sm text-slate-500 truncate">{m.dosis}</p>
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-md ${tomada ? 'text-green-600 bg-green-50' : 'text-blue-500 bg-blue-50'}`}>{toma.h}</span>
+                  <p className="font-bold text-slate-800 text-sm leading-tight truncate mt-1">{toma.nombre}</p>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  {m.estado === 'tomado' && (
-                    <button onClick={() => toggleTomado(m.id)}
-                      className="bg-green-50 text-green-600 px-2 py-1 rounded-md text-[10px] font-bold uppercase flex items-center gap-1 active:scale-95 transition-all">
-                      <span className="material-symbols-outlined text-[12px]">check_circle</span>
-                      {m.hora}
-                    </button>
-                  )}
-                  {m.estado === 'pendiente' && (
-                    <button onClick={() => toggleTomado(m.id)}
-                      className="bg-amber-50 text-amber-600 px-2 py-1 rounded-md text-[10px] font-bold uppercase flex items-center gap-1 active:scale-95 transition-all">
-                      <span className="material-symbols-outlined text-[12px]">schedule</span>
-                      Marcar
-                    </button>
-                  )}
-                  {m.estado === 'manana' && (
-                    <div className="bg-slate-100 text-slate-500 px-2 py-1 rounded-md text-[10px] font-bold uppercase flex items-center gap-1">
-                      <span className="material-symbols-outlined text-[12px]">calendar_month</span>
-                      Mañana
-                    </div>
-                  )}
-                  <button onClick={() => handleRemove(m.id)}
-                    className="w-7 h-7 flex items-center justify-center text-slate-300 hover:text-red-400 transition-colors">
-                    <span className="material-symbols-outlined text-[18px]">close</span>
+                {!isEditing && (
+                  <button onClick={() => {
+                    const up = {...paciente};
+                    if(!up.medicamentos[toma.mIdx].tomasRealizadas) up.medicamentos[toma.mIdx].tomasRealizadas = [];
+                    const idx = up.medicamentos[toma.mIdx].tomasRealizadas.indexOf(toma.h);
+                    if(idx > -1) up.medicamentos[toma.mIdx].tomasRealizadas.splice(idx, 1);
+                    else up.medicamentos[toma.mIdx].tomasRealizadas.push(toma.h);
+                    setPaciente(up); saveToGlobal(up);
+                  }} className={`w-11 h-11 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-all ${tomada ? 'bg-green-500 text-white' : 'bg-slate-50 text-slate-200'}`}>
+                    <span className="material-symbols-outlined font-black text-lg">check</span>
                   </button>
-                </div>
-              </article>
+                )}
+                {isEditing && (
+                  <button onClick={() => {
+                    const copy = [...paciente.medicamentos];
+                    copy[toma.mIdx].horas = copy[toma.mIdx].horas.filter(h => h !== toma.h);
+                    if(copy[toma.mIdx].horas.length === 0) copy.splice(toma.mIdx, 1);
+                    setPaciente({...paciente, medicamentos: copy});
+                  }} className="text-red-300 w-10 h-10 flex items-center justify-center"><span className="material-symbols-outlined">delete</span></button>
+                )}
+              </div>
             );
           })}
+        </div>
 
-          <button onClick={() => setShowModal(true)}
-            className="w-full mt-2 bg-[#1775d3] hover:bg-blue-600 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-[0_8px_20px_rgba(23,117,211,0.3)] active:scale-95 transition-all">
-            <span className="material-symbols-outlined text-[24px]">add_circle</span>
-            Añadir nuevo medicamento
-          </button>
+        {/* BOTÓN ELIMINAR (No se mueve) */}
+        <div className="pt-10 border-t">
+          {!confirmDelete ? (
+            <button onClick={() => setConfirmDelete(true)} className="w-full py-4 bg-red-50 text-red-500 rounded-2xl font-black text-xs tracking-widest uppercase">Eliminar Usuario</button>
+          ) : (
+            <div className="space-y-3 animate-in slide-in-from-bottom-2">
+              <p className="text-center text-[11px] font-bold text-red-500 uppercase">¿Confirmar borrado de {paciente.nombre}?</p>
+              <div className="grid grid-cols-2 gap-3">
+                <button onClick={() => setConfirmDelete(false)} className="py-3 bg-slate-100 rounded-xl font-bold text-xs">NO</button>
+                <button onClick={deleteThisPatient} className="py-3 bg-red-600 text-white rounded-xl font-bold text-xs shadow-lg">SÍ, BORRAR</button>
+              </div>
+            </div>
+          )}
         </div>
       </main>
-
-      {/* Bottom nav */}
-
-
-      {/* ── Modal añadir medicamento ── */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end justify-center"
-          onClick={resetModal}>
-          <div className="bg-white w-full rounded-t-3xl p-6 space-y-4 slide-up"
-            onClick={e => e.stopPropagation()}>
-
-            <div className="flex items-center justify-between mb-1">
-              <h3 className="text-lg font-bold text-[#1f2937]">Nuevo medicamento</h3>
-              <button onClick={resetModal}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500">
-                <span className="material-symbols-outlined text-[18px]">close</span>
-              </button>
-            </div>
-
-            {/* Nombre */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1.5">
-                Nombre <span className="text-red-400">*</span>
-              </label>
-              <input
-                value={form.nombre}
-                onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))}
-                placeholder="Ej: Ibuprofeno 600mg"
-                className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:border-[#1775d3] focus:ring-2 focus:ring-[#1775d3]/10 transition-all"
-              />
-            </div>
-
-            {/* Dosis */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1.5">
-                Dosis / Pauta <span className="text-red-400">*</span>
-              </label>
-              <input
-                value={form.dosis}
-                onChange={e => setForm(f => ({ ...f, dosis: e.target.value }))}
-                placeholder="Ej: 1 comprimido cada 8h"
-                className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:border-[#1775d3] focus:ring-2 focus:ring-[#1775d3]/10 transition-all"
-              />
-            </div>
-
-            {/* Estado del medicamento */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-2">Estado al registrar</label>
-              <div className="flex gap-2 flex-wrap">
-                <button
-                  onClick={() => setNuevoEstado('tomado')}
-                  className={`chip ${nuevoEstado === 'tomado' ? 'chip-tomado-active' : 'chip-inactive'}`}>
-                  <span className="material-symbols-outlined text-[14px]">check_circle</span>
-                  Tomado hoy
-                </button>
-                <button
-                  onClick={() => setNuevoEstado('pendiente')}
-                  className={`chip ${nuevoEstado === 'pendiente' ? 'chip-pendiente-active' : 'chip-inactive'}`}>
-                  <span className="material-symbols-outlined text-[14px]">schedule</span>
-                  Pendiente
-                </button>
-                <button
-                  onClick={() => setNuevoEstado('manana')}
-                  className={`chip ${nuevoEstado === 'manana' ? 'chip-manana-active' : 'chip-inactive'}`}>
-                  <span className="material-symbols-outlined text-[14px]">calendar_month</span>
-                  Mañana
-                </button>
-              </div>
-            </div>
-
-            {/* Hora — solo si está tomado */}
-            {nuevoEstado === 'tomado' && (
-              <div className="slide-up">
-                <label className="block text-xs font-semibold text-slate-500 mb-2">
-                  Hora en que se tomó <span className="text-slate-300 font-normal">(opcional — si no, se usa la hora actual)</span>
-                </label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {HORAS_RAPIDAS.map(h => (
-                    <button key={h}
-                      onClick={() => { setHoraSeleccionada(h); setHoraCustom(''); }}
-                      className={`hora-chip ${horaSeleccionada === h && !horaCustom ? 'hora-chip-active' : 'hora-chip-inactive'}`}>
-                      {h}
-                    </button>
-                  ))}
-                </div>
-                <input
-                  type="time"
-                  value={horaCustom}
-                  onChange={e => { setHoraCustom(e.target.value); setHoraSeleccionada(''); }}
-                  className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:border-[#1775d3] focus:ring-2 focus:ring-[#1775d3]/10 transition-all"
-                  placeholder="O introduce hora manualmente"
-                />
-                <p className="text-xs text-slate-400 mt-1.5">
-                  Se registrará como: <span className="font-semibold text-green-600">
-                    {horaCustom || horaSeleccionada || (() => {
-                      const now = new Date();
-                      return `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-                    })()}
-                  </span>
-                </p>
-              </div>
-            )}
-
-            {error && (
-              <p className="text-xs text-red-500 flex items-center gap-1">
-                <span className="material-symbols-outlined text-[14px]">error</span>{error}
-              </p>
-            )}
-
-            <button onClick={handleAdd}
-              className="w-full h-14 bg-[#1775d3] text-white rounded-2xl font-bold text-base shadow-[0_8px_24px_rgba(23,117,211,0.25)] active:scale-95 transition-all flex items-center justify-center gap-2">
-              <span className="material-symbols-outlined text-[22px]">check_circle</span>
-              Guardar medicamento
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

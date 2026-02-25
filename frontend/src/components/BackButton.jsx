@@ -9,12 +9,10 @@ export default function BackButton({
   const navigate = useNavigate();
 
   const handleNavigation = () => {
-    // Si le pasas una función onClick personalizada, la ejecuta. 
-    // Si no, navega a la ruta que le digas (por defecto '/home').
     if (onClick) {
       onClick();
     } else if (to === -1) {
-      navigate(-1); // Vuelve a la pantalla anterior en el historial
+      navigate(-1);
     } else {
       navigate(to);
     }

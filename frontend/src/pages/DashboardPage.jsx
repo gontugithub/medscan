@@ -1,5 +1,6 @@
   import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import MedScanLogo from '../components/MedScan_Logo.jsx';
 
 export default function DashboardPage() {
   const navigate = useNavigate();

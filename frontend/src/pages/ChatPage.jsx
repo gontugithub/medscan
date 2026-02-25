@@ -139,23 +139,27 @@ const ChatPage = () => {
       
       {/* Header */}
       <header className="bg-white px-5 pt-6 pb-2 shadow-sm z-20 sticky top-0 border-b border-slate-100 flex flex-col gap-2">
-        <BackButton />
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 shrink-0">
-            <MedScanLogo className="w-full h-full" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-lg font-black text-[#1775d3]">MedScan IA</h1>
-            <p className="text-[10px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-md inline-flex items-center gap-1 border border-green-200 truncate max-w-full">
-              <span className="material-symbols-outlined text-[12px] shrink-0">check_circle</span> 
-              <span className="truncate">
-                {isEn ? 'Leaflet:' : 'Prospecto:'} {nombreMedicamento}
-              </span>
-            </p>
-          </div>
-        </div>
-      </header>
-
+  {/* Lógica condicional para el botón atrás */}
+  <BackButton 
+    to={location.state?.mode === 'ask' ? '/home' : '/add-patient'} 
+    label={location.state?.mode === 'ask' ? 'Volver al inicio' : 'Volver a pacientes'} 
+  />
+  
+  <div className="flex items-center gap-4">
+    <div className="w-10 h-10 shrink-0">
+      <MedScanLogo className="w-full h-full" />
+    </div>
+    <div className="flex-1 min-w-0">
+      <h1 className="text-lg font-black text-[#1775d3]">MedScan IA</h1>
+      <p className="text-[10px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-md inline-flex items-center gap-1 border border-green-200 truncate max-w-full">
+        <span className="material-symbols-outlined text-[12px] shrink-0">check_circle</span> 
+        <span className="truncate">
+          {isEn ? 'Leaflet:' : 'Prospecto:'} {nombreMedicamento}
+        </span>
+      </p>
+    </div>
+  </div>
+</header>
       {/* Chat */}
       <main className="flex-1 overflow-y-auto px-5 py-6 space-y-6 no-scrollbar pb-10">
         {messages.map((msg, index) => (
