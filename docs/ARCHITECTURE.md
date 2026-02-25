@@ -1,8 +1,8 @@
 
-ÌøóÔ∏è Arquitectura del Sistema - MedScan
+ÔøΩÔøΩÔøΩÔ∏è Arquitectura del Sistema - MedScan
 MedScan est√° dise√±ado utilizando una arquitectura cliente-servidor desacoplada. Prioriza la rapidez de respuesta, la accesibilidad (A11y) y la separaci√≥n estricta de dominios (Paciente vs. M√©dico).
 
-Ì≥ä Diagrama de Flujo Global
+ÔøΩÔøΩÔøΩ Diagrama de Flujo Global
 Fragmento de c√≥digo
 sequenceDiagram
     participant User as Usuario / C√°mara
@@ -22,7 +22,7 @@ sequenceDiagram
     IA-->>Back: Devuelve source_id
     Back-->>Front: JSON { nombre, source_id, foto_url }
     Front->>User: Muestra Chat Interactivo
-Ì≥± Frontend (Capa de Presentaci√≥n)
+ÔøΩÔøΩÔøΩ Frontend (Capa de Presentaci√≥n)
 Desarrollado como una Single Page Application (SPA) enfocada en Mobile-First.
 
 Tecnolog√≠as Base: React 18, Vite (para HMR r√°pido y build optimizado), React Router DOM v6.
@@ -60,7 +60,7 @@ Uso de variables de entorno (.env) para proteger las API Keys de los servicios d
 
 Desplegado en Railway usando Gunicorn como servidor WSGI de producci√≥n para manejar m√∫ltiples peticiones concurrentes.
 
-Ì∫Ä Decisiones de Dise√±o y Escalabilidad
+ÔøΩÔøΩÔøΩ Decisiones de Dise√±o y Escalabilidad
 Microservicios (Terceros): Al delegar el OCR pesado y la vectorizaci√≥n LLM a APIs especializadas, el backend propio se mantiene ultraligero y econ√≥mico de escalar.
 
 Prompts de Sistema Estrictos: El backend inyecta un System Prompt ("Role: Medical Assistant for Elderly...") de forma invisible para el usuario. Esto evita alucinaciones de la IA y garantiza respuestas menores a 60 palabras, en un tono respetuoso.
