@@ -1,6 +1,9 @@
 @"
 <div align="center">
-  <img src="frontend/public/logo-weagain-sin-fondo.svg" alt="WeAgain Logo" width="200"/>
+  <h1 style="font-size: 4.5rem; font-weight: 800; margin: 0; line-height: 1;">
+    <span style="color: #FF6B00;">We</span><span style="color: #007BFF;">Again</span>
+    <span style="font-size: 1.8rem; color: #555; font-weight: 400; vertical-align: middle; margin-left: 12px;">IA</span>
+  </h1>
   <h1>🏥 MedScan</h1>
   <p><strong>Escanea. Entiende. Nunca olvides tu medicación.</strong></p>
   <p>Plataforma sociosanitaria accesible que elimina la brecha digital en el manejo de medicamentos para personas mayores y sus cuidadores.</p>
@@ -169,7 +172,6 @@ Gonzalo
 Carlos
 Manuel
 
-En 48 horas para la hackathon.
 
 📄 Licencia
 MIT License – Uso libre para fines educativos y comerciales.
