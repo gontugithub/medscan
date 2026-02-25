@@ -47,7 +47,7 @@ export default function MedicationListPage() {
             Mis medicamentos
           </h1>
           <p className="text-slate-600 text-lg font-medium">
-            Paciente: <span className="text-primary font-bold">Paca López</span>
+            Paciente: <span className="text-primary font-bold">Paca</span>
           </p>
         </div>
       </header>
