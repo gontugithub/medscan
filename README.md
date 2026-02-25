@@ -28,13 +28,13 @@ Con un simple escaneo de la caja del medicamento, el sistema identifica automát
 
 ## USUARIOS TEST
 
--Medicos:
--user: medico
--contraseña: cualquiera adecuada con los requisitos de contraseña
+Medicos:<br>
+-user: medico<br>
+-contraseña: cualquiera adecuada con los requisitos de contraseña<br>
 
--Pacientes:
--user: paciente
--contraseña: cualquiera adecuada con los requisitos de contraseña
+Pacientes:<br>
+-user: paciente<br>
+-contraseña: cualquiera adecuada con los requisitos de contraseña<br>
 
 ---
 
