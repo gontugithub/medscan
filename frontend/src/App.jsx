@@ -5,7 +5,6 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import RoleSelectionPage from './pages/RoleSelectionPage';
-import PatientNoCaregiverPage from './pages/PatientNoCaregiverPage';
 import DashboardPage from './pages/DashboardPage';
 import AddPatientPage from './pages/AddPatientPage';
 import PatientProfilePage from './pages/PatientProfilePage';
@@ -17,7 +16,6 @@ import MedicationListPage from './pages/MedicationListPage';
 import MedicineDetailPage from './pages/MedicineDetailPage';
 import AlarmPage from './pages/AlarmPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import ChatPageMedico from './pages/ChatPageMedico';
 
 export default function App() {
   return (
@@ -39,7 +37,6 @@ export default function App() {
           <Route path="/medicine-detail" element={<MedicineDetailPage />} />
           <Route path="/alarm" element={<AlarmPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/chat-medico" element={<ChatPageMedico />} />
         </Routes>
       </div>
     </BrowserRouter>
