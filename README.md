@@ -69,8 +69,7 @@ MedScan nace para proteger a la población más vulnerable, reduciendo los error
 | Router        | React Router DOM               | Navegación fluida                      |
 | Backend       | Python + Flask                 | API ligera y escalable                 |
 | Despliegue    | Railway (Backend) + Vercel     | Frontend como PWA                      |
-| IA / OCR      | OCR.space + ChatPDF + Gemini   | Procesamiento inteligente              |
-| Base de datos | SQLite (demo) / PostgreSQL     | Usuarios y relaciones                  |
+| IA / OCR      | OCR.space + ChatPDF | Procesamiento inteligente              |
 
 ---
 
@@ -94,37 +93,6 @@ URL base: https://medscan-production.up.railway.app
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 MétodoEndpointDescripciónPOST/uploadFoto → OCR → CIMA → prepara chatPOST/upload-by-cn/:cnCNM directo (sin foto)GET/preguntaConsulta sobre el prospectoGET/medicamento/:cnDatos + foto oficialPOST/toma-registradaRegistra toma y notifica cuidador
 
 🛠️ Instalación Local
@@ -132,8 +100,6 @@ Bashgit clone https://github.com/gontugithub/medscan.git
 cd medscan
 Backend
 Bashcd backend
-python -m venv venv
-.\venv\Scripts\activate
 pip install -r requirements.txt
 copy .env.example .env
 python app.py
